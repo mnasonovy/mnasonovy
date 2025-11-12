@@ -72,7 +72,14 @@
 
 ### 🌐 Connect with Me
 <p align="center">
-  <a href="https://vk.com/nasonov_m_y" target="_blank"><img src="https://skillicons.dev/icons?i=vk" title="VK" /></a>
-  <a href="https://t.me/nasonov_m_y" target="_blank"><img src="https://skillicons.dev/icons?i=telegram" title="Telegram" /></a>
-  <a href="https://github.com/RootSquadron" target="_blank"><img src="https://skillicons.dev/icons?i=github" title="RootSquadron" /></a>
+  <a href="https://t.me/nasonov_m_y" target="_blank">
+    <img src="https://skillicons.dev/icons?i=telegram" title="Telegram" height="48" />
+  </a>
+  <a href="https://vk.com/nasonov_m_y" target="_blank">
+    <img src="https://skillicons.dev/icons?i=vk" title="VK" height="48" />
+  </a>
+  <a href="https://github.com/RootSquadron" target="_blank">
+    <img src="https://skillicons.dev/icons?i=github" title="GitHub" height="48" />
+  </a>
 </p>
+
