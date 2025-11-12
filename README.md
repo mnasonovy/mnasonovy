@@ -69,14 +69,3 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/mnasonovy/mnasonovy/main/assets/projects.gif" width="400" alt="Coding Animation" />
 </p>
-
-
----
-
-### 🌐 Connect with Me
-📬 [Telegram](https://t.me/nasonov_m_y)  
-🔗 [VK](https://vk.com/nasonov_m_y)  
-💻 [GitHub](https://github.com/RootSquadron)
-
-
-
