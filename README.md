@@ -58,6 +58,10 @@
 </p>
 
 <p align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Courier+Prime&size=22&duration=2500&pause=500&color=00FF99&center=true&vCenter=true&width=500&lines=INITIALIZING+ROOTSQUADRON+SYSTEM...;ACCESS+GRANTED.;RENDERING+ACTIVITY+MAP..." />
+</p>
+
+<p align="center">
   <img src="https://raw.githubusercontent.com/mnasonovy/mnasonovy/output/github-contribution-grid-snake.svg" alt="snake animation" />
 </p>
 
