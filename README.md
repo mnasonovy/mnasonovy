@@ -62,25 +62,21 @@
 
 ---
 
-### 🏗️ Current Projects
-💭 Developing security tools and educational automation systems  
+### 🧩 Current Projects
+💭 Working on university labs.  
+🛠 Developing personal applications for **routine automation** and **workflow optimization**.  
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/mnasonovy/mnasonovy/main/assets/projects.gif" width="400" alt="Coding Animation" />
 </p>
 
+
 ---
 
 ### 🌐 Connect with Me
-<p align="center">
-  <a href="https://t.me/nasonov_m_y" target="_blank">
-    <img src="https://skillicons.dev/icons?i=telegram&theme=dark" title="Telegram" width="50" height="50"/>
-  </a>
-  <a href="https://vk.com/nasonov_m_y" target="_blank">
-    <img src="https://skillicons.dev/icons?i=vk&theme=dark" title="VK" width="50" height="50"/>
-  </a>
-  <a href="https://github.com/RootSquadron" target="_blank">
-    <img src="https://skillicons.dev/icons?i=github&theme=dark" title="GitHub" width="50" height="50"/>
-  </a>
-</p>
+📬 [Telegram](https://t.me/nasonov_m_y)  
+🔗 [VK](https://vk.com/nasonov_m_y)  
+💻 [GitHub](https://github.com/RootSquadron)
+
 
 
