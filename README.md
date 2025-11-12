@@ -13,7 +13,8 @@
 ---
 
 ### ⚙️ About Me
-💡 *"Security is not a product — it's a process."*  
+
+> <span style="color:#00FF99;">🔐 SECURITY IS NOT A PRODUCT — IT'S A PROCESS</span>
 
 🔹 Cybersecurity student at **Samara University (IBAS)**  
 🔹 Focus: **C/C++**, **Python**, **Linux**, **Network Security**, **Automation**  
