@@ -15,14 +15,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Generate Snake Animation (Green Hacker Style)
+      - name: Generate Snake Animation (Dark Green Theme)
         uses: Platane/snk@v3
         with:
           github_user_name: mnasonovy
-          outputs: dist/github-contribution-grid-snake.svg
-          palette: github-dark
+          outputs: dist/github-contribution-grid-snake-dark.svg
+          # Задаём цвета вручную
           color_snake: "#00FF99"
-          color_dots: "#0D1117,#0D1117,#00FF99,#00CC77,#006644"
+          color_dots: "#0D1117,#0D1117,#00FF99,#00CC77,#007744"
+          color_empty: "#0D1117"
+          color_path: "#00FF99"
+          color_border: "#0D1117"
+          background: "#0D1117"
 
       - name: Push generated Snake to output branch
         uses: crazy-max/ghaction-github-pages@v3.1.0
