@@ -1,7 +1,8 @@
 name: generate snake animation
+
 on:
-  schedule: # запускается раз в день
-    - cron: "0 0 * * *"
+  schedule:
+    - cron: "0 0 * * *" # запуск каждый день
   workflow_dispatch:
   push:
     branches:
@@ -11,16 +12,19 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo content
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Generate snake.svg
+      - name: Generate Snake Animation (Green Hacker Style)
         uses: Platane/snk@v3
         with:
           github_user_name: mnasonovy
           outputs: dist/github-contribution-grid-snake.svg
+          palette: github-dark
+          color_snake: "#00FF99"
+          color_dots: "#0D1117,#0D1117,#00FF99,#00CC77,#006644"
 
-      - name: Push generated snake.svg to output branch
+      - name: Push generated Snake to output branch
         uses: crazy-max/ghaction-github-pages@v3.1.0
         with:
           target_branch: output
