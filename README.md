@@ -13,7 +13,8 @@
 ---
 
 ### ⚙️ About Me
-💡 *"Security is not a product — it's a process."*  
+
+> <span style="color:#00FF99;">🔐 SECURITY IS NOT A PRODUCT — IT'S A PROCESS</span>
 
 🔹 Cybersecurity student at **Samara University (IBAS)**  
 🔹 Focus: **C/C++**, **Python**, **Linux**, **Network Security**, **Automation**  
@@ -62,17 +63,10 @@
 
 ---
 
-### 🏗️ Current Projects
-💭 Developing security tools and educational automation systems  
+### 🧩 Current Projects
+💭 Working on university labs.  
+🛠 Developing personal applications for **routine automation** and **workflow optimization**.  
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/mnasonovy/mnasonovy/main/assets/projects.gif" width="400" alt="Coding Animation" />
-</p>
-
----
-
-### 🌐 Connect with Me
-<p align="center">
-  <a href="https://vk.com/nasonov_m_y" target="_blank"><img src="https://skillicons.dev/icons?i=vk" title="VK" /></a>
-  <a href="https://t.me/nasonov_m_y" target="_blank"><img src="https://skillicons.dev/icons?i=telegram" title="Telegram" /></a>
-  <a href="https://github.com/RootSquadron" target="_blank"><img src="https://skillicons.dev/icons?i=github" title="RootSquadron" /></a>
 </p>
