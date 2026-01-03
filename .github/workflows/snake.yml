@@ -1,8 +1,8 @@
-name: generate snake animation
+name: generate snake animation (new year edition)
 
 on:
   schedule:
-    - cron: "0 0 * * *" # запуск каждый день
+    - cron: "0 0 * * *" # запускается каждый день
   workflow_dispatch:
   push:
     branches:
@@ -15,18 +15,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Generate Snake Animation (Dark Green Theme)
+      - name: Generate Snake Animation (New Year Theme)
         uses: Platane/snk@v3
         with:
           github_user_name: mnasonovy
-          outputs: dist/github-contribution-grid-snake-dark.svg
-          # Задаём цвета вручную
-          color_snake: "#00FF99"
-          color_dots: "#0D1117,#0D1117,#00FF99,#00CC77,#007744"
-          color_empty: "#0D1117"
-          color_path: "#00FF99"
-          color_border: "#0D1117"
-          background: "#0D1117"
+          outputs: dist/github-contribution-grid-snake-newyear.svg
+
+          # Новогодняя палитра: ёлка, игрушки, гирлянды
+          color_snake: "#00FF99"          # неоново-зелёная змейка
+          color_dots: "#0B1020,#14324A,#00FF99,#FF5555,#FFD700"
+          #            пустая   слабая    средняя  высокая  макс активность
+          color_empty: "#0B1020"          # тёмный ночной фон
+          color_path: "#FFD700"           # «огоньки гирлянды» за змеёй
+          color_border: "#14324A"         # мягкая рамка в холодных тонах
+          background: "#050814"           # зимняя ночная тема
 
       - name: Push generated Snake to output branch
         uses: crazy-max/ghaction-github-pages@v3.1.0

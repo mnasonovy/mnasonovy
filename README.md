@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/mnasonovy/mnasonovy/main/assets/header.gif" alt="Hacker Intro" width="100%" />
+  <img src="https://raw.githubusercontent.com/mnasonovy/mnasonovy/main/assets/girl.jfif" alt="Girl Intro" width="100%" />
 </p>
 
 <!-- ====== INTRO ====== -->
@@ -64,7 +64,6 @@
 
 ### 📊 GitHub Stats
 <p align="center">
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=mnasonovy&layout=compact&theme=github_dark&hide_border=true&bg_color=0D1117&title_color=00FF99" height="160" />
   <img src="https://github-readme-streak-stats.herokuapp.com?user=mnasonovy&theme=github-dark-blue&hide_border=true&background=0D1117&stroke=00FF99" height="160" />
 </p>
 
@@ -74,4 +73,8 @@
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/mnasonovy/mnasonovy/output/github-contribution-grid-snake-dark.svg" alt="snake animation" />
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/mnasonovy/mnasonovy/main/assets/newyear.gif" alt="New Year Vibe" width="100%" />
 </p>
