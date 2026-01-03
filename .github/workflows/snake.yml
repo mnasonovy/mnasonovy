@@ -21,14 +21,14 @@ jobs:
           github_user_name: mnasonovy
           outputs: dist/github-contribution-grid-snake-newyear.svg
 
-          # Новогодняя палитра: ёлка, игрушки, гирлянды
-          color_snake: "#00FF99"          # неоново-зелёная змейка
-          color_dots: "#0B1020,#14324A,#00FF99,#FF5555,#FFD700"
-          #            пустая   слабая    средняя  высокая  макс активность
-          color_empty: "#0B1020"          # тёмный ночной фон
-          color_path: "#FFD700"           # «огоньки гирлянды» за змеёй
-          color_border: "#14324A"         # мягкая рамка в холодных тонах
-          background: "#050814"           # зимняя ночная тема
+          # Яркая новогодняя палитра
+          color_snake: "#FF5555"          # красная змейка (как гирлянда/нос у оленя)
+          color_dots: "#050814,#004400,#00FF00,#FF0000,#FFD700"
+          #            пусто    низкая    средняя   высокая  макс активность
+          color_empty: "#050814"          # почти чёрный зимний ночной фон
+          color_path: "#FFD700"           # золотой след за змейкой
+          color_border: "#FFD700"         # тонкая золотая рамка
+          background: "#050814"           # тот же тёмный фон
 
       - name: Push generated Snake to output branch
         uses: crazy-max/ghaction-github-pages@v3.1.0
