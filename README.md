@@ -1,32 +1,30 @@
 <!-- ====== INTRO ====== -->
 <h1 align="center">Hi, I'm Mikhail Nasonov 👋</h1>
 <h3 align="center">
-Cybersecurity Student @ Samara University · QA Intern @ PSB
+Cybersecurity Student @ Samara University
 </h3>
 
 <p align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?size=22&duration=3500&color=00FF99&center=true&vCenter=true&lines=Cybersecurity+and+Quality+Engineering;Breaking+systems+to+make+them+stronger;Learning+by+building+and+testing;Linux,+C%2FC%2B%2B,+Python;" />
+  <img src="https://readme-typing-svg.herokuapp.com?size=22&duration=3500&color=00FF99&center=true&vCenter=true&lines=Cybersecurity+%26+Systems;Breaking+systems+to+make+them+stronger;Linux,+C%2FC%2B%2B,+Python;" />
 </p>
 
 ---
 
 ### 👨‍💻 About Me
 
-> 🔐 **Security is not a product — it’s a process**
+> 🔐 **Security is a process, not a feature**
 
 - 🎓 Cybersecurity student at **Samara University (IBAS)**
-- 🧪 **QA Intern** at **PSB**
-- 🔎 Interests: **software testing**, **system programming**, **network & application security**
-- ⚙️ I like clean code, reproducible systems, and things that don’t break in production
+- 🔎 Focused on **system programming**, **network & application security**
+- ⚙️ I value clean code, simple architectures, and predictable systems
 
 ---
 
 ### 🎯 Current Focus
 
-- Building **automation tools and bots** for education and workflow optimization  
-- Improving skills in **C/C++ system programming**
-- Studying **reverse engineering**, **cryptography**, and **Linux internals**
-- Practicing **test design, bug analysis, and quality mindset** on real projects
+- Automation tools and small systems that solve real problems  
+- **C/C++** and low-level thinking  
+- **Linux internals**, reverse engineering basics, cryptography foundations  
 
 ---
 
@@ -37,40 +35,13 @@ Cybersecurity Student @ Samara University · QA Intern @ PSB
 </p>
 
 <p align="center">
-  <img src="https://skillicons.dev/icons?i=linux,docker,git,github,postgres,dotnet,fastapi" height="40"/>
+  <img src="https://skillicons.dev/icons?i=linux,docker,git,github,postgres" height="40"/>
 </p>
-
----
-
-### 🧪 Testing & QA
-
-- **Test design techniques**:
-  - Equivalence partitioning  
-  - Boundary value analysis  
-  - Decision tables  
-  - State transition testing  
-
-- **Types of testing**:
-  - Functional
-  - Regression
-  - Smoke
-  - Performance
-  - Security
-  - Usability  
-
-- **Workflow**:
-  - Writing test cases & checklists
-  - Bug reporting and analysis
-  - Working with requirements and test environments
 
 ---
 
 ### 📊 GitHub Activity
 
 <p align="center">
-  <img src="https://github-readme-streak-stats.herokuapp.com?user=mnasonovy&theme=github-dark-blue&hide_border=true&background=0D1117&stroke=00FF99" height="160"/>
-</p>
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/mnasonovy/mnasonovy/output/github-contribution-grid-snake.svg" />
+  <img src="https://github-readme-stats.vercel.app/api?username=mnasonovy&show_icons=true&theme=github_dark&hide_border=true" height="160"/>
 </p>
