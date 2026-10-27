@@ -4,7 +4,15 @@ import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
-const tables = ['branches','quests','xp_ledger'] as const
+const tables = [
+  'profiles',
+  'branches',
+  'quests',
+  'xp_ledger',
+  'daily_templates',
+  'daily_instances',
+  'daily_instance_items',
+] as const
 
 export function RealtimeRefresh({ userId }: { userId: string }) {
   const router = useRouter()
