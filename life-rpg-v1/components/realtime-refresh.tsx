@@ -7,6 +7,9 @@ import { createClient } from '@/lib/supabase/client'
 const tables = [
   'profiles',
   'branches',
+  'arcs',
+  'progression_nodes',
+  'progression_edges',
   'quests',
   'xp_ledger',
   'daily_templates',
