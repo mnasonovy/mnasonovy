@@ -10,15 +10,25 @@ async function sendPasswordReset() {
   const supabase = await createClient()
   const { data, error } = await supabase.auth.getUser()
   if (error || !data.user?.email) redirect('/login')
+
   const h = await headers()
   const origin = h.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-  await supabase.auth.resetPasswordForEmail(data.user.email, {
+  const { error: resetError } = await supabase.auth.resetPasswordForEmail(data.user.email, {
     redirectTo: `${origin}/auth/callback?next=/update-password`,
   })
-  redirect(`/security?message=${encodeURIComponent('Ссылка для смены пароля отправлена на почту.')}`)
+
+  if (resetError) {
+    const isRateLimit = resetError.status === 429 || resetError.code === 'over_email_send_rate_limit'
+    const message = isRateLimit
+      ? 'Письмо НЕ отправлено: исчерпан лимит отправки Supabase. Повтори позже — новые клики сейчас не создадут письмо.'
+      : `Письмо НЕ отправлено: ${resetError.message || 'ошибка сервиса восстановления.'}`
+    redirect(`/security?error=${encodeURIComponent(message)}`)
+  }
+
+  redirect(`/security?message=${encodeURIComponent('Ссылка для смены пароля действительно отправлена на почту. Используй самое новое письмо.')}`)
 }
 
-export default async function SecurityPage({ searchParams }: { searchParams: Promise<{ message?: string }> }) {
+export default async function SecurityPage({ searchParams }: { searchParams: Promise<{ message?: string; error?: string }> }) {
   const params = await searchParams
   const supabase = await createClient()
   const { data, error } = await supabase.auth.getUser()
@@ -30,6 +40,7 @@ export default async function SecurityPage({ searchParams }: { searchParams: Pro
     <div className="eyebrow">Аккаунт</div>
     <h1 className="title">Безопасность</h1>
     <p className="subtitle">Способы входа, пароль и двухфакторная защита персонажа.</p>
+    {params.error && <p className="error">{params.error}</p>}
     {params.message && <p className="success">{params.message}</p>}
 
     <section className="section grid grid2">
