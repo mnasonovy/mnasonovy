@@ -10,11 +10,19 @@ async function requestReset(formData: FormData) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
   const supabase = await createClient()
 
-  await supabase.auth.resetPasswordForEmail(email, {
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${appUrl}/auth/callback?next=/update-password`,
   })
 
-  redirect(`/forgot-password?message=${encodeURIComponent('Если такой аккаунт существует, ссылка для смены пароля уже отправлена на почту.')}`)
+  if (error) {
+    const isRateLimit = error.status === 429 || error.code === 'over_email_send_rate_limit'
+    const message = isRateLimit
+      ? 'Слишком много писем восстановления было запрошено подряд. Supabase временно ограничил отправку. Попробуй позже — повторные клики сейчас письмо не отправят.'
+      : 'Не удалось отправить письмо восстановления. Попробуй ещё раз позже.'
+    redirect(`/forgot-password?error=${encodeURIComponent(message)}`)
+  }
+
+  redirect(`/forgot-password?message=${encodeURIComponent('Ссылка для смены пароля отправлена на почту. Используй самое новое письмо — recovery-ссылки одноразовые.')}`)
 }
 
 export default async function ForgotPasswordPage({ searchParams }: { searchParams: Promise<{ error?: string; message?: string }> }) {
@@ -22,7 +30,7 @@ export default async function ForgotPasswordPage({ searchParams }: { searchParam
   return <main className="auth"><section className="card authCard">
     <div className="eyebrow">Восстановление доступа</div>
     <h1 className="title">Сменить пароль</h1>
-    <p className="subtitle">Введи email аккаунта. Мы не показываем, существует ли такой адрес в системе.</p>
+    <p className="subtitle">Введи email аккаунта. После перехода по ссылке аккаунт с включённой 2FA дополнительно попросит TOTP-код.</p>
     {params.error && <p className="error">{params.error}</p>}
     {params.message && <p className="success">{params.message}</p>}
     <form className="form" action={requestReset}>
