@@ -1,7 +1,9 @@
 import Link from 'next/link'
-import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+const googleEnabled = process.env.NEXT_PUBLIC_GOOGLE_AUTH_ENABLED === 'true'
 
 async function login(formData: FormData) {
   'use server'
@@ -16,15 +18,16 @@ async function login(formData: FormData) {
 
 async function loginWithGoogle() {
   'use server'
-  const h = await headers()
-  const origin = h.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  if (process.env.NEXT_PUBLIC_GOOGLE_AUTH_ENABLED !== 'true') {
+    redirect(`/login?error=${encodeURIComponent('Google-вход ещё не подключён на стороне провайдера. Пока используй email и пароль.')}`)
+  }
   const supabase = await createClient()
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: `${origin}/auth/callback?next=/today` },
+    options: { redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/callback?next=/today` },
   })
   if (error || !data.url) {
-    redirect(`/login?error=${encodeURIComponent('Google-вход пока недоступен. Можно войти по email и паролю.')}`)
+    redirect(`/login?error=${encodeURIComponent('Google-вход сейчас недоступен. Можно войти по email и паролю.')}`)
   }
   redirect(data.url)
 }
@@ -35,9 +38,10 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
     <div className="eyebrow">Life RPG v1</div><h1 className="title">С возвращением</h1>
     <p className="subtitle">Один аккаунт — один прогресс на всех устройствах.</p>
     {params.error && <p className="error">{params.error}</p>}{params.message && <p className="success">{params.message}</p>}
-    <form action={loginWithGoogle}><button className="btn oauthBtn" type="submit">G&nbsp;&nbsp;Продолжить с Google</button></form>
+    {googleEnabled ? <form action={loginWithGoogle}><button className="btn oauthBtn" type="submit">G&nbsp;&nbsp;Продолжить с Google</button></form> : <div><button className="btn oauthBtn" type="button" disabled>G&nbsp;&nbsp;Google — подключаем</button><p className="muted" style={{fontSize:12,marginTop:8}}>Кнопка включится после настройки Google OAuth в Supabase.</p></div>}
     <div className="authDivider"><span>или</span></div>
     <form action={login} className="form"><div className="field"><label>Email</label><input className="input" name="email" type="email" autoComplete="email" required /></div><div className="field"><label>Пароль</label><input className="input" name="password" type="password" autoComplete="current-password" minLength={8} required /></div><button className="btn btnPrimary">Войти</button></form>
     <div className="authLinks"><Link href="/forgot-password">Забыл пароль</Link><span className="muted">·</span><Link href="/register">Создать аккаунт</Link></div>
+    <div className="muted" style={{fontSize:11,marginTop:14}}>Auth callback: {appUrl.replace(/^https?:\/\//,'')}</div>
   </section></main>
 }
