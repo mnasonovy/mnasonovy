@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 
@@ -8,12 +7,11 @@ async function requestReset(formData: FormData) {
   const email = String(formData.get('email') ?? '').trim()
   if (!email) redirect('/forgot-password?error=Укажи email')
 
-  const h = await headers()
-  const origin = h.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
   const supabase = await createClient()
 
   await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin}/auth/callback?next=/update-password`,
+    redirectTo: `${appUrl}/auth/callback?next=/update-password`,
   })
 
   redirect(`/forgot-password?message=${encodeURIComponent('Если такой аккаунт существует, ссылка для смены пароля уже отправлена на почту.')}`)
