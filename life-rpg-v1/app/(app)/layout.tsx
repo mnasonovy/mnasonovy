@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { RealtimeRefresh } from '@/components/realtime-refresh'
+import { TimezoneSync } from '@/components/timezone-sync'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,7 +15,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
   if (aal?.nextLevel === 'aal2' && aal.currentLevel !== 'aal2') redirect('/mfa')
 
-  const { data: profile } = await supabase.from('profiles').select('display_name').eq('id', userId).maybeSingle()
+  const { data: profile } = await supabase.from('profiles').select('display_name,timezone').eq('id', userId).maybeSingle()
   const nav = [
     ['/today','☀️ Сегодня'],
     ['/quests','🎯 Квесты'],
@@ -25,6 +26,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return <div className="shell">
     <RealtimeRefresh userId={userId}/>
+    <TimezoneSync userId={userId} currentTimezone={profile?.timezone || 'UTC'} />
     <aside className="sidebar">
       <div className="brand">🔥 Life RPG <span className="pill">v1 dev</span></div>
       <nav className="nav">{nav.map(([href,label])=><Link href={href} key={href}>{label}</Link>)}</nav>
