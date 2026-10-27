@@ -1,34 +1,33 @@
 'use client'
 
-import { useLayoutEffect, useRef, type FormEvent, type TextareaHTMLAttributes } from 'react'
+import { useEffect } from 'react'
 
-export function AutoTextarea({ className = '', onInput, style, ...props }: TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  const ref = useRef<HTMLTextAreaElement>(null)
+function fitTextarea(element: HTMLTextAreaElement) {
+  element.style.height = '0px'
+  element.style.height = `${element.scrollHeight}px`
+}
 
-  function resize() {
-    const element = ref.current
-    if (!element) return
-    element.style.height = '0px'
-    element.style.height = `${element.scrollHeight}px`
-  }
+export function TextareaAutosizeManager() {
+  useEffect(() => {
+    const fitAll = () => {
+      document.querySelectorAll<HTMLTextAreaElement>('textarea').forEach(fitTextarea)
+    }
 
-  useLayoutEffect(() => {
-    resize()
-  }, [props.value, props.defaultValue])
+    const onInput = (event: Event) => {
+      if (event.target instanceof HTMLTextAreaElement) fitTextarea(event.target)
+    }
 
-  function handleInput(event: FormEvent<HTMLTextAreaElement>) {
-    resize()
-    onInput?.(event)
-  }
+    fitAll()
+    document.addEventListener('input', onInput, true)
 
-  return (
-    <textarea
-      {...props}
-      ref={ref}
-      rows={1}
-      className={`${className} autoTextarea`.trim()}
-      style={{ ...style, resize: 'none', overflowY: 'hidden' }}
-      onInput={handleInput}
-    />
-  )
+    const observer = new MutationObserver(fitAll)
+    observer.observe(document.body, { childList: true, subtree: true })
+
+    return () => {
+      document.removeEventListener('input', onInput, true)
+      observer.disconnect()
+    }
+  }, [])
+
+  return null
 }
