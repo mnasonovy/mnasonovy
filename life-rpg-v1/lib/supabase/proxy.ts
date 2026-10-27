@@ -8,11 +8,14 @@ export async function updateSession(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
       cookies: {
-        getAll() { return request.cookies.getAll() },
-        setAll(cookiesToSet) {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet, headers) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
           response = NextResponse.next({ request })
           cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options))
+          Object.entries(headers).forEach(([key, value]) => response.headers.set(key, value))
         },
       },
     }
@@ -21,13 +24,25 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims()
   const user = data?.claims
   const path = request.nextUrl.pathname
-  const isPublic = path.startsWith('/login') || path.startsWith('/register') || path.startsWith('/auth')
+  const isPublic =
+    path.startsWith('/login') ||
+    path.startsWith('/register') ||
+    path.startsWith('/forgot-password') ||
+    path.startsWith('/auth')
 
   if (!user && !isPublic) {
-    const url = request.nextUrl.clone(); url.pathname = '/login'; return NextResponse.redirect(url)
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    url.search = ''
+    return NextResponse.redirect(url)
   }
+
   if (user && (path === '/login' || path === '/register')) {
-    const url = request.nextUrl.clone(); url.pathname = '/today'; return NextResponse.redirect(url)
+    const url = request.nextUrl.clone()
+    url.pathname = '/today'
+    url.search = ''
+    return NextResponse.redirect(url)
   }
+
   return response
 }
