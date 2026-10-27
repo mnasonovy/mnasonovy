@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
-export function MfaChallenge() {
-  const supabase = createClient()
+export function MfaChallenge({ nextPath = '/today' }: { nextPath?: string }) {
+  const supabase = useMemo(() => createClient(), [])
   const [factorId, setFactorId] = useState('')
   const [code, setCode] = useState('')
   const [error, setError] = useState('')
@@ -18,12 +18,12 @@ export function MfaChallenge() {
       }
       const factor = data.totp.find((item) => item.status === 'verified')
       if (!factor) {
-        window.location.replace('/today')
+        window.location.replace(nextPath)
         return
       }
       setFactorId(factor.id)
     })
-  }, [supabase])
+  }, [nextPath, supabase])
 
   async function verify() {
     if (!factorId || code.length < 6) return
@@ -34,7 +34,7 @@ export function MfaChallenge() {
       if (challenge.error) throw challenge.error
       const result = await supabase.auth.mfa.verify({ factorId, challengeId: challenge.data.id, code })
       if (result.error) throw result.error
-      window.location.replace('/today')
+      window.location.replace(nextPath)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Неверный код')
     } finally {
