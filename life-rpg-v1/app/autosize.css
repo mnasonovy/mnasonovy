@@ -1,0 +1,5 @@
+textarea.input{
+  resize:none !important;
+  overflow-y:hidden !important;
+  min-height:46px !important;
+}
