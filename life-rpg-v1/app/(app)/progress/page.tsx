@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { CollapsiblePanel } from '@/components/collapsible-panel'
 
 async function requireUser(){const supabase=await createClient();const{data}=await supabase.auth.getClaims();const userId=data?.claims?.sub;if(!userId)throw new Error('Not authenticated');return{supabase,userId}}
 
@@ -21,26 +22,28 @@ export default async function ProgressPage(){
  const maxBranchXp=Math.max(1,...Array.from(branchXp.values()))
  const sevenDaysAgo=Date.now()-7*24*60*60*1000
  const xp7=(ledger??[]).filter(row=>new Date(row.created_at).getTime()>=sevenDaysAgo).reduce((s,row)=>s+Number(row.amount),0)
- const sourceLabel=(type:string)=>({quest_completion:'Квест завершён',quest_reopen:'Квест возвращён',daily_completion:'Ежедневка закрыта',daily_reopen:'Ежедневка возвращена',progression_node_completion:'Узел карты пройден'} as Record<string,string>)[type]||type||'Событие'
- const eventEmoji=(type:string)=>({quest_completion:'🎯',quest_reopen:'↩️',daily_completion:'☀️',daily_reopen:'↩️',progression_node_completion:'🌳'} as Record<string,string>)[type]||'•'
+ const level=Math.max(1,Math.floor(totalXp/500)+1)
+ const levelFloor=(level-1)*500
+ const levelProgress=Math.max(0,totalXp-levelFloor)
+ const levelPct=Math.min(100,Math.round(levelProgress/500*100))
+ const sourceLabel=(type:string)=>({quest_completion:'Квест завершён',quest_reopen:'Квест возвращён',daily_completion:'Ежедневка закрыта',daily_reopen:'Ежедневка возвращена',progression_node_completion:'Этап карты пройден'} as Record<string,string>)[type]||type||'Событие'
+ const eventEmoji=(type:string)=>({quest_completion:'⚔',quest_reopen:'↩',daily_completion:'♨',daily_reopen:'↩',progression_node_completion:'✦'} as Record<string,string>)[type]||'•'
  return <>
-  <div className="eyebrow">Статистика персонажа</div><h1 className="title">Прогресс</h1><p className="subtitle">Не журнал базы данных, а сводка того, что реально двигает персонажа вперёд.</p>
+  <header className="pageIntro"><div className="eyebrow">История персонажа</div><h1 className="title">Прогресс</h1><p className="subtitle">Здесь видно не количество галочек, а накопленный путь: опыт, завершённые истории и направления, которые ты развиваешь.</p></header>
 
   <section className="section progressHero">
-    <div className="card xpHero"><div><div className="eyebrow">Общий опыт</div><div className="xpValue">{totalXp}</div><div className="xpSub">XP накоплено за всё время</div></div><div className="actions"><span className="pill">+{xp7} XP за 7 дней</span><span className="pill">{totalCompleted} завершений</span></div></div>
-    <div className="metricStack">
-      <div className="card miniMetric"><span className="muted">Квесты</span><strong>{completedQuests}</strong></div>
-      <div className="card miniMetric"><span className="muted">Ежедневки</span><strong>{completedDaily}</strong></div>
-      <div className="card miniMetric"><span className="muted">Узлы карты</span><strong>{completedNodes}</strong></div>
-    </div>
+    <div className="card xpHero"><div className="xpHeroGlow"/><div><div className="eyebrow">Уровень {level}</div><div className="xpValue">{totalXp}<span> XP</span></div><div className="xpSub">До следующего уровня — {Math.max(0,500-levelProgress)} XP</div><div className="levelTrack"><span style={{width:`${levelPct}%`}}/></div></div><div className="actions"><span className="pill">+{xp7} XP за 7 дней</span><span className="pill">{totalCompleted} завершений</span></div></div>
+    <div className="metricStack"><div className="card miniMetric"><span className="metricIcon">⚔</span><span className="muted">Квесты</span><strong>{completedQuests}</strong></div><div className="card miniMetric"><span className="metricIcon">♨</span><span className="muted">Ежедневки</span><strong>{completedDaily}</strong></div><div className="card miniMetric"><span className="metricIcon">✦</span><span className="muted">Этапы карты</span><strong>{completedNodes}</strong></div></div>
   </section>
 
-  <section className="section"><div className="sectionHeading"><div><div className="eyebrow">Направления</div><h2>Вклад веток в XP</h2></div><span className="pill">{branches?.length??0} веток</span></div>
-   <div className="branchList">{branches?.length?branches.map(branch=>{const xp=branchXp.get(branch.id)??0;const pct=Math.round(xp/maxBranchXp*100);return <div className="branchRow" key={branch.id}><div className="branchRowTop"><div><strong>{branch.icon} {branch.name}</strong>{branch.description&&<div className="muted" style={{marginTop:3}}>{branch.description}</div>}</div><strong>{xp} XP</strong></div><div className="branchTrack"><span style={{width:`${pct}%`}}/></div></div>}):<div className="card muted">Ветки ещё не созданы.</div>}</div>
-  </section>
+  <div className="section panelStack">
+    <CollapsiblePanel title="Ветки развития" subtitle="Куда уходят твои усилия и накопленный опыт" icon="❧" meta={<span>{branches?.length??0} веток</span>}>
+      <div className="branchList">{branches?.length?branches.map(branch=>{const xp=branchXp.get(branch.id)??0;const pct=Math.round(xp/maxBranchXp*100);return <div className="branchRow" key={branch.id}><div className="branchRowTop"><div><strong>{branch.icon} {branch.name}</strong>{branch.description&&<div className="muted compactText">{branch.description}</div>}</div><strong>{xp} XP</strong></div><div className="branchTrack"><span style={{width:`${pct}%`}}/></div></div>}):<div className="emptyState"><strong>Ветки ещё не созданы.</strong><span>Создай направление на карте развития — здесь появится его вклад в общий путь.</span></div>}</div>
+    </CollapsiblePanel>
 
-  <section className="section"><div className="sectionHeading"><div><div className="eyebrow">История</div><h2>Последние XP-события</h2></div><span className="pill">{ledger?.length??0} событий</span></div>
-   {ledger?.length?<div className="eventList">{ledger.slice(0,20).map(row=><div className="eventRow" key={row.id}><div className="eventMeta"><span className="eventDot"/><div><div className="eventTitle">{eventEmoji(row.source_type)} {sourceLabel(row.source_type)}</div><div className="eventTime">{new Date(row.created_at).toLocaleString('ru-RU')}</div></div></div><div className="eventXp">{Number(row.amount)>0?'+':''}{row.amount} XP</div></div>)}</div>:<div className="card muted">XP-событий пока нет. Заверши квест, ежедневку или узел карты.</div>}
-  </section>
+    <CollapsiblePanel title="Летопись опыта" subtitle="Последние события, которые изменили персонажа" icon="✧" meta={<span>{ledger?.length??0} событий</span>} defaultOpen={false}>
+      {ledger?.length?<div className="eventList">{ledger.slice(0,24).map(row=><div className="eventRow" key={row.id}><div className="eventMeta"><span className="eventDot">{eventEmoji(row.source_type)}</span><div><div className="eventTitle">{sourceLabel(row.source_type)}</div><div className="eventTime">{new Date(row.created_at).toLocaleString('ru-RU')}</div></div></div><div className="eventXp">{Number(row.amount)>0?'+':''}{row.amount} XP</div></div>)}</div>:<div className="emptyState"><strong>Летопись пока пуста.</strong><span>Заверши квест, ежедневку или этап карты — первое событие появится здесь.</span></div>}
+    </CollapsiblePanel>
+  </div>
  </>
 }
