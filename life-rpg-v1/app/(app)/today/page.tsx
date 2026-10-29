@@ -1,5 +1,7 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { CollapsiblePanel } from '@/components/collapsible-panel'
+import { ModalForm } from '@/components/modal-form'
 
 async function requireUser() {
   const supabase = await createClient()
@@ -11,16 +13,11 @@ async function requireUser() {
 
 function localDateInZone(timeZone: string) {
   try {
-    const parts = new Intl.DateTimeFormat('en-US', {
-      timeZone,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    }).formatToParts(new Date())
-    const get = (type: string) => parts.find((part) => part.type === type)?.value ?? ''
+    const parts = new Intl.DateTimeFormat('en-US', { timeZone, year:'numeric', month:'2-digit', day:'2-digit' }).formatToParts(new Date())
+    const get = (type:string) => parts.find(part=>part.type===type)?.value ?? ''
     return `${get('year')}-${get('month')}-${get('day')}`
   } catch {
-    return new Date().toISOString().slice(0, 10)
+    return new Date().toISOString().slice(0,10)
   }
 }
 
@@ -31,7 +28,7 @@ async function createBranch(formData: FormData) {
   if (!name) return
   const { error } = await supabase.from('branches').insert({ user_id:userId, name, icon:String(formData.get('icon') || '🌿').slice(0,8), color:'#c9825b' })
   if (error) throw error
-  revalidatePath('/today')
+  revalidatePath('/today'); revalidatePath('/map')
 }
 
 async function createQuest(formData: FormData) {
@@ -40,9 +37,19 @@ async function createQuest(formData: FormData) {
   const title = String(formData.get('title') ?? '').trim().slice(0,180)
   if (!title) return
   const max = Math.max(1, Number(formData.get('max') || 1))
-  const { error } = await supabase.from('quests').insert({ user_id:userId, branch_id:String(formData.get('branchId') || '') || null, title, max_progress:max, progress:0, unit:String(formData.get('unit') || '').slice(0,24), xp_reward:Math.max(0,Number(formData.get('xp') || 100)) })
+  const { error } = await supabase.from('quests').insert({
+    user_id:userId,
+    branch_id:String(formData.get('branchId') || '') || null,
+    title,
+    description:String(formData.get('description') || '').trim().slice(0,1000),
+    quest_type:String(formData.get('type') || 'side'),
+    max_progress:max,
+    progress:0,
+    unit:String(formData.get('unit') || '').slice(0,24),
+    xp_reward:Math.max(0,Number(formData.get('xp') || 100)),
+  })
   if (error) throw error
-  revalidatePath('/today')
+  revalidatePath('/today'); revalidatePath('/quests'); revalidatePath('/progress')
 }
 
 async function createDailyTemplate(formData: FormData) {
@@ -52,62 +59,62 @@ async function createDailyTemplate(formData: FormData) {
   if (!title) return
   const branchId = String(formData.get('branchId') || '') || null
   const xp = Math.max(0, Number(formData.get('xp') || 50))
-  const items = String(formData.get('items') || '')
-    .split(/\r?\n/)
-    .map((item) => item.trim().slice(0,180))
-    .filter(Boolean)
-  const { error } = await supabase.rpc('create_daily_template', {
-    p_title: title,
-    p_branch_id: branchId,
-    p_xp_reward: xp,
-    p_items: items,
-  })
+  const items = String(formData.get('items') || '').split(/\r?\n/).map(item=>item.trim().slice(0,180)).filter(Boolean)
+  const { error } = await supabase.rpc('create_daily_template', { p_title:title, p_branch_id:branchId, p_xp_reward:xp, p_items:items })
   if (error) throw error
   revalidatePath('/today')
 }
 
-async function disableDailyTemplate(id: string) {
+async function disableDailyTemplate(id:string) {
   'use server'
   const { supabase, userId } = await requireUser()
-  const { error } = await supabase.from('daily_templates').update({ is_active: false }).eq('id', id).eq('user_id', userId)
+  const { error } = await supabase.from('daily_templates').update({ is_active:false }).eq('id',id).eq('user_id',userId)
   if (error) throw error
   revalidatePath('/today')
 }
 
-async function toggleDailyItem(id: string, completed: boolean) {
+async function toggleDailyItem(id:string,completed:boolean) {
   'use server'
   const { supabase } = await requireUser()
-  const { error } = await supabase.rpc('toggle_daily_item', {
-    p_item_id: id,
-    p_completed: completed,
-    p_idempotency_key: crypto.randomUUID(),
-  })
+  const { error } = await supabase.rpc('toggle_daily_item',{ p_item_id:id, p_completed:completed, p_idempotency_key:crypto.randomUUID() })
   if (error) throw error
   revalidatePath('/today')
 }
 
-async function setProgress(id:string, value:number) {
+async function setProgress(id:string,value:number) {
   'use server'
   const { supabase } = await requireUser()
   const { error } = await supabase.rpc('set_quest_progress',{ p_quest_id:id,p_progress:value,p_idempotency_key:crypto.randomUUID() })
   if (error) throw error
-  revalidatePath('/today')
+  revalidatePath('/today'); revalidatePath('/quests'); revalidatePath('/progress')
 }
-
 async function complete(id:string) {
   'use server'
   const { supabase } = await requireUser()
   const { error } = await supabase.rpc('complete_quest',{ p_quest_id:id,p_idempotency_key:crypto.randomUUID() })
   if (error) throw error
-  revalidatePath('/today')
+  revalidatePath('/today'); revalidatePath('/quests'); revalidatePath('/progress')
 }
-
 async function reopen(id:string) {
   'use server'
   const { supabase } = await requireUser()
   const { error } = await supabase.rpc('reopen_quest',{ p_quest_id:id,p_idempotency_key:crypto.randomUUID() })
   if (error) throw error
-  revalidatePath('/today')
+  revalidatePath('/today'); revalidatePath('/quests'); revalidatePath('/progress')
+}
+
+function QuestControls({q}:{q:any}) {
+  const p=Number(q.progress), max=Math.max(1,Number(q.max_progress))
+  if(q.status==='completed') return <form action={reopen.bind(null,q.id)}><button className="btn">Вернуть</button></form>
+  return <div className="actions">{max>1&&<><form action={setProgress.bind(null,q.id,Math.max(0,p-1))}><button className="btn">−1</button></form><form action={setProgress.bind(null,q.id,Math.min(max,p+1))}><button className="btn">+1</button></form></>}<form action={complete.bind(null,q.id)}><button className="btn btnPrimary">Готово</button></form></div>
+}
+
+function QuestCard({q}:{q:any}) {
+  const p=Number(q.progress), max=Math.max(1,Number(q.max_progress)), pct=Math.round(p/max*100)
+  return <article className="card quest questCard">
+    <div><div className="actions"><span className="pill">{q.quest_type==='main'?'Главный':q.quest_type==='medium'?'Средний':'Побочный'}</span>{q.branches&&<span className="pill">{q.branches.icon} {q.branches.name}</span>}</div><h3>{q.title}</h3>{q.description&&<p className="muted compactText">{q.description}</p>}<div className="progress"><span style={{width:`${Math.min(100,pct)}%`}}/></div><div className="muted">{p}/{max} {q.unit} · {q.xp_reward} XP</div></div>
+    <QuestControls q={q}/>
+  </article>
 }
 
 export default async function TodayPage() {
@@ -116,8 +123,8 @@ export default async function TodayPage() {
   const timeZone = profile?.timezone || 'UTC'
   const localDate = localDateInZone(timeZone)
 
-  const { error: materializeError } = await supabase.rpc('materialize_daily_instances', { p_local_date: localDate })
-  if (materializeError) throw materializeError
+  const { error: materializeError } = await supabase.rpc('materialize_daily_instances',{ p_local_date:localDate })
+  if(materializeError) throw materializeError
 
   const [{data:quests},{data:branches},{data:ledger},{data:dailyInstances},{data:dailyTemplates}] = await Promise.all([
     supabase.from('quests').select('*,branches(name,icon,color)').eq('user_id',userId).not('status','eq','archived').order('created_at',{ascending:false}),
@@ -127,72 +134,63 @@ export default async function TodayPage() {
     supabase.from('daily_templates').select('*').eq('user_id',userId).order('created_at'),
   ])
 
-  const dailyIds = (dailyInstances ?? []).map((instance) => instance.id)
-  let dailyItems: any[] = []
-  if (dailyIds.length) {
-    const { data, error } = await supabase.from('daily_instance_items').select('*').eq('user_id',userId).in('instance_id', dailyIds).order('sort_order')
-    if (error) throw error
-    dailyItems = data ?? []
-  }
+  const dailyIds=(dailyInstances??[]).map(instance=>instance.id)
+  let dailyItems:any[]=[]
+  if(dailyIds.length){const{data,error}=await supabase.from('daily_instance_items').select('*').eq('user_id',userId).in('instance_id',dailyIds).order('sort_order');if(error)throw error;dailyItems=data??[]}
 
-  const xp=(ledger??[]).reduce((sum,row)=>sum+row.amount,0)
+  const xp=(ledger??[]).reduce((sum,row)=>sum+Number(row.amount),0)
   const active=(quests??[]).filter(q=>q.status==='active')
+  const focus=active.find(q=>q.quest_type==='main')??active[0]
+  const otherActive=focus?active.filter(q=>q.id!==focus.id):active
   const activeDaily=(dailyTemplates??[]).filter(template=>template.is_active)
   const completedDaily=(dailyInstances??[]).filter(instance=>instance.status==='completed').length
-  const branchById = new Map((branches??[]).map(branch=>[branch.id,branch]))
-  const templateById = new Map((dailyTemplates??[]).map(template=>[template.id,template]))
-  const itemsByInstance = new Map<string, any[]>()
-  for (const item of dailyItems) {
-    const current = itemsByInstance.get(item.instance_id) ?? []
-    current.push(item)
-    itemsByInstance.set(item.instance_id, current)
-  }
+  const branchById=new Map((branches??[]).map(branch=>[branch.id,branch]))
+  const templateById=new Map((dailyTemplates??[]).map(template=>[template.id,template]))
+  const itemsByInstance=new Map<string,any[]>()
+  for(const item of dailyItems){const current=itemsByInstance.get(item.instance_id)??[];current.push(item);itemsByInstance.set(item.instance_id,current)}
+
+  const questForm=<form className="form" action={createQuest}>
+    <div className="field"><label>Название</label><input className="input" name="title" required placeholder="Закрыть 4 лабораторные"/></div>
+    <div className="field"><label>Описание</label><textarea className="input" name="description" placeholder="Зачем это важно и какой результат хочешь получить"/></div>
+    <div className="grid grid2"><div className="field"><label>Ветка</label><select className="input" name="branchId"><option value="">Без ветки</option>{branches?.map(b=><option value={b.id} key={b.id}>{b.icon} {b.name}</option>)}</select></div><div className="field"><label>Тип</label><select className="input" name="type" defaultValue="side"><option value="main">Главный</option><option value="medium">Средний</option><option value="side">Побочный</option></select></div></div>
+    <div className="grid grid3"><div className="field"><label>Цель</label><input className="input" type="number" min="1" name="max" defaultValue="1"/></div><div className="field"><label>Единица</label><input className="input" name="unit" placeholder="лабы"/></div><div className="field"><label>XP</label><input className="input" type="number" min="0" name="xp" defaultValue="100"/></div></div>
+    <button className="btn btnPrimary">Создать квест</button>
+  </form>
+
+  const dailyForm=<form className="form" action={createDailyTemplate}>
+    <div className="field"><label>Название</label><input className="input" name="title" placeholder="Утренний запуск" required/></div>
+    <div className="field"><label>Ветка</label><select className="input" name="branchId"><option value="">Без ветки</option>{branches?.map(branch=><option value={branch.id} key={branch.id}>{branch.icon} {branch.name}</option>)}</select></div>
+    <div className="field"><label>Чек-лист — один пункт на строку</label><textarea className="input" name="items" placeholder={'Стакан воды\nРазминка 5 минут\nСпланировать день'}/></div>
+    <div className="field"><label>Награда XP</label><input className="input" type="number" min="0" max="1000000" name="xp" defaultValue="50"/></div>
+    <button className="btn btnPrimary">Добавить ежедневку</button>
+  </form>
+
+  const branchForm=<form className="form" action={createBranch}><div className="grid grid2"><div className="field"><label>Иконка</label><input className="input" name="icon" defaultValue="🌿"/></div><div className="field"><label>Название</label><input className="input" name="name" placeholder="Учёба" required/></div></div><button className="btn btnPrimary">Создать ветку</button></form>
 
   return <>
-    <div className="eyebrow">Life RPG v1 · {localDate}</div>
-    <h1 className="title">Сегодня</h1>
-    <p className="subtitle">Ежедневные ритуалы создаются на день автоматически. Разовые задачи остаются квестами.</p>
+    <header className="pageIntro"><div className="eyebrow">Твой лагерь · {localDate}</div><h1 className="title">Сегодня</h1><p className="subtitle">Маленькие шаги поддерживают огонь и двигают большие истории вперёд.</p></header>
 
-    <section className="section grid grid3">
-      <div className="card stat"><span className="muted">Активных квестов</span><strong>{active.length}</strong></div>
-      <div className="card stat"><span className="muted">Ежедневки</span><strong>{completedDaily}/{dailyInstances?.length??0}</strong></div>
-      <div className="card stat"><span className="muted">XP ledger</span><strong>{xp}</strong></div>
+    <section className="section grid grid3 journeyStats">
+      <div className="card stat"><span className="muted">Активные квесты</span><strong>{active.length}</strong><small>миссий в пути</small></div>
+      <div className="card stat"><span className="muted">Ежедневки</span><strong>{completedDaily}/{dailyInstances?.length??0}</strong><small>выполнено сегодня</small></div>
+      <div className="card stat"><span className="muted">Опыт</span><strong>{xp} XP</strong><small>накоплено за путь</small></div>
     </section>
 
-    <section className="section">
-      <div className="sectionHeading"><div><div className="eyebrow">Повторяемое</div><h2>Ежедневные квесты</h2></div><span className="pill">{timeZone}</span></div>
-      <div className="grid">
-        {dailyInstances?.length ? dailyInstances.map(instance=>{
-          const template=templateById.get(instance.template_id)
-          const items=itemsByInstance.get(instance.id)??[]
-          const completed=items.filter(item=>item.is_completed).length
-          const required=Math.min(template?.min_items_to_complete??items.length,items.length||1)
-          const branch=template?.branch_id?branchById.get(template.branch_id):null
-          return <article className={`card dailyCard ${instance.status==='completed'?'dailyDone':''}`} key={instance.id}>
-            <div className="dailyHeader"><div><div className="actions"><span className="pill">{instance.status==='completed'?'✓ выполнено':'на сегодня'}</span>{branch&&<span className="pill">{branch.icon} {branch.name}</span>}</div><h3>{template?.title??'Ежедневный квест'}</h3><div className="muted">{completed}/{required} обязательных · {template?.xp_reward??0} XP</div></div></div>
-            <div className="dailyItems">{items.map(item=><form action={toggleDailyItem.bind(null,item.id,!item.is_completed)} key={item.id}><button className={`dailyItem ${item.is_completed?'isDone':''}`} type="submit"><span className="dailyCheck">{item.is_completed?'✓':''}</span><span>{item.title}</span></button></form>)}</div>
-          </article>
-        }) : <div className="card muted">Пока нет ежедневных квестов. Создай первый шаблон ниже.</div>}
-      </div>
-    </section>
+    {focus && <section className="section focusQuest"><div className="focusGlow"/><div className="eyebrow">Главный фокус</div><div className="focusQuestBody"><div><div className="actions">{focus.branches&&<span className="pill">{focus.branches.icon} {focus.branches.name}</span>}<span className="pill">{focus.xp_reward} XP</span></div><h2>{focus.title}</h2>{focus.description&&<p className="muted">{focus.description}</p>}<div className="progress"><span style={{width:`${Math.min(100,Math.round(Number(focus.progress)/Math.max(1,Number(focus.max_progress))*100))}%`}}/></div><div className="muted">{focus.progress}/{focus.max_progress} {focus.unit}</div></div><QuestControls q={focus}/></div></section>}
 
-    <section className="section grid grid2">
-      <div className="card"><div className="eyebrow">Новый ритуал</div><h2>Создать ежедневку</h2><form className="form" action={createDailyTemplate}>
-        <div className="field"><label>Название</label><input className="input" name="title" placeholder="Утренний запуск" required/></div>
-        <div className="field"><label>Ветка</label><select className="input" name="branchId"><option value="">Без ветки</option>{branches?.map(branch=><option value={branch.id} key={branch.id}>{branch.icon} {branch.name}</option>)}</select></div>
-        <div className="field"><label>Чек-лист — один пункт на строку</label><textarea className="input" name="items" rows={4} placeholder={'Стакан воды\nРазминка 5 минут\nСпланировать день'}/></div>
-        <div className="field"><label>Награда XP</label><input className="input" type="number" min="0" max="1000000" name="xp" defaultValue="50"/></div>
-        <button className="btn btnPrimary">Добавить ежедневку</button>
-      </form></div>
+    <div className="section panelStack">
+      <CollapsiblePanel title="Ежедневки" subtitle="Ритуалы и маленькие шаги на сегодня" icon="♨" meta={<span>{completedDaily}/{dailyInstances?.length??0}</span>} action={<ModalForm triggerLabel="+ Добавить ежедневку" title="Новая ежедневка" eyebrow="Новый ритуал">{dailyForm}</ModalForm>}>
+        <div className="grid">{dailyInstances?.length?dailyInstances.map(instance=>{const template=templateById.get(instance.template_id);const items=itemsByInstance.get(instance.id)??[];const completed=items.filter(item=>item.is_completed).length;const required=Math.min(template?.min_items_to_complete??items.length,items.length||1);const branch=template?.branch_id?branchById.get(template.branch_id):null;return <article className={`card dailyCard ${instance.status==='completed'?'dailyDone':''}`} key={instance.id}><div className="dailyHeader"><div><div className="actions"><span className="pill">{instance.status==='completed'?'✓ выполнено':'на сегодня'}</span>{branch&&<span className="pill">{branch.icon} {branch.name}</span>}</div><h3>{template?.title??'Ежедневный квест'}</h3><div className="muted">{completed}/{required} обязательных · {template?.xp_reward??0} XP</div></div></div><div className="dailyItems">{items.map(item=><form action={toggleDailyItem.bind(null,item.id,!item.is_completed)} key={item.id}><button className={`dailyItem ${item.is_completed?'isDone':''}`} type="submit"><span className="dailyCheck">{item.is_completed?'✓':''}</span><span>{item.title}</span></button></form>)}</div></article>}):<div className="emptyState"><strong>Ритуалов на сегодня пока нет.</strong><span>Создай ежедневку — она будет появляться здесь автоматически.</span></div>}</div>
+        {activeDaily.length>0&&<div className="templateManager"><div className="eyebrow">Активные шаблоны</div>{activeDaily.map(template=>{const branch=template.branch_id?branchById.get(template.branch_id):null;return <div className="securityRow" key={template.id}><div><strong>{template.title}</strong><div className="muted">{branch?`${branch.icon} ${branch.name} · `:''}{template.xp_reward} XP</div></div><form action={disableDailyTemplate.bind(null,template.id)}><button className="btn btnQuiet">Отключить</button></form></div>})}</div>}
+      </CollapsiblePanel>
 
-      <div className="card"><div className="eyebrow">Активные шаблоны</div><h2>{activeDaily.length} ежедневок</h2><div className="form">{activeDaily.length?activeDaily.map(template=>{const branch=template.branch_id?branchById.get(template.branch_id):null;return <div className="securityRow" key={template.id}><div><strong>{template.title}</strong><div className="muted">{branch?`${branch.icon} ${branch.name} · `:''}{template.xp_reward} XP</div></div><form action={disableDailyTemplate.bind(null,template.id)}><button className="btn">Отключить</button></form></div>}):<p className="muted">Нет активных шаблонов.</p>}</div></div>
-    </section>
+      <CollapsiblePanel title="Активные квесты" subtitle="Текущие задачи и приключения" icon="⚔" meta={<span>{active.length}</span>} action={<ModalForm triggerLabel="+ Добавить квест" title="Новый квест" eyebrow="Новая миссия">{questForm}</ModalForm>}>
+        <div className="grid">{otherActive.length?otherActive.map(q=><QuestCard q={q} key={q.id}/>):focus?<div className="emptyState"><strong>Остальные квесты завершены.</strong><span>Главный фокус уже показан выше.</span></div>:<div className="emptyState"><strong>Активных квестов нет.</strong><span>Создай одну миссию, которую реально можешь продвинуть сегодня.</span></div>}</div>
+      </CollapsiblePanel>
 
-    <section className="section grid grid2">
-      <div className="card"><div className="eyebrow">Быстрый старт</div><h2>Создать ветку</h2><form className="form" action={createBranch}><div className="grid grid2"><div className="field"><label>Иконка</label><input className="input" name="icon" defaultValue="🌿"/></div><div className="field"><label>Название</label><input className="input" name="name" placeholder="Учёба" required/></div></div><button className="btn btnPrimary">Создать ветку</button></form></div>
-      <div className="card"><div className="eyebrow">Новый квест</div><h2>Добавить миссию</h2><form className="form" action={createQuest}><div className="field"><label>Название</label><input className="input" name="title" required placeholder="Закрыть 4 лабы"/></div><div className="field"><label>Ветка</label><select className="input" name="branchId"><option value="">Без ветки</option>{branches?.map(b=><option value={b.id} key={b.id}>{b.icon} {b.name}</option>)}</select></div><div className="grid grid3"><input className="input" type="number" min="1" name="max" defaultValue="1" title="Цель"/><input className="input" name="unit" placeholder="лабы"/><input className="input" type="number" min="0" name="xp" defaultValue="100" title="XP"/></div><button className="btn btnPrimary">Создать квест</button></form></div>
-    </section>
-
-    <section className="section"><h2>Разовые квесты</h2><div className="grid">{quests?.length?quests.map(q=>{const p=Number(q.progress),max=Number(q.max_progress),pct=Math.round(p/max*100);return <article className="card quest" key={q.id}><div><div className="actions"><span className="pill">{q.status}</span>{q.branches&&<span className="pill">{q.branches.icon} {q.branches.name}</span>}</div><h3>{q.title}</h3><div className="progress"><span style={{width:`${Math.min(100,pct)}%`}}/></div><div className="muted">{p}/{max} {q.unit} · {q.xp_reward} XP</div></div><div className="actions">{q.status==='completed'?<form action={reopen.bind(null,q.id)}><button className="btn">Вернуть</button></form>:<>{max>1&&<><form action={setProgress.bind(null,q.id,Math.max(0,p-1))}><button className="btn">−1</button></form><form action={setProgress.bind(null,q.id,Math.min(max,p+1))}><button className="btn">+1</button></form></>}<form action={complete.bind(null,q.id)}><button className="btn btnPrimary">Готово</button></form></>}</div></article>}):<div className="card muted">Создай первый квест.</div>}</div></section>
+      <CollapsiblePanel title="Ветки" subtitle="Направления твоего развития" icon="❧" meta={<span>{branches?.length??0}</span>} action={<ModalForm triggerLabel="+ Добавить ветку" title="Новая ветка" eyebrow="Новое направление">{branchForm}</ModalForm>} defaultOpen={false}>
+        <div className="branchChips">{branches?.length?branches.map(branch=><span className="branchChip" key={branch.id}><b>{branch.icon}</b>{branch.name}</span>):<div className="emptyState"><strong>Пока нет веток.</strong><span>Создай первое направление развития.</span></div>}</div>
+      </CollapsiblePanel>
+    </div>
   </>
 }
