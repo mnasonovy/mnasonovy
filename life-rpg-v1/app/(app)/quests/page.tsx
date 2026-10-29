@@ -1,5 +1,7 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { CollapsiblePanel } from '@/components/collapsible-panel'
+import { ModalForm } from '@/components/modal-form'
 
 async function requireUser() {
   const supabase = await createClient()
@@ -36,7 +38,8 @@ async function reopen(id:string){'use server';const{ supabase }=await requireUse
 
 function QuestCard({q}:{q:any}){
   const p=Number(q.progress),max=Math.max(1,Number(q.max_progress)),pct=Math.round(p/max*100)
-  return <article className="card quest"><div><div className="actions"><span className="pill">{q.quest_type}</span><span className="pill">{q.status}</span>{q.branches&&<span className="pill">{q.branches.icon} {q.branches.name}</span>}</div><h3>{q.title}</h3>{q.description&&<p className="muted">{q.description}</p>}<div className="progress"><span style={{width:`${Math.min(100,pct)}%`}}/></div><div className="muted">{p}/{max} {q.unit} · {q.xp_reward} XP</div></div><div className="actions">{q.status==='completed'?<form action={reopen.bind(null,q.id)}><button className="btn">Вернуть</button></form>:<>{max>1&&<><form action={setProgress.bind(null,q.id,Math.max(0,p-1))}><button className="btn">−1</button></form><form action={setProgress.bind(null,q.id,Math.min(max,p+1))}><button className="btn">+1</button></form></>}<form action={complete.bind(null,q.id)}><button className="btn btnPrimary">Готово</button></form></>}</div></article>
+  const typeLabel=q.quest_type==='main'?'Главный':q.quest_type==='medium'?'Средний':'Побочный'
+  return <article className="card quest questCard"><div><div className="actions"><span className="pill">{typeLabel}</span>{q.branches&&<span className="pill">{q.branches.icon} {q.branches.name}</span>}{q.status==='completed'&&<span className="pill pillGood">✓ завершён</span>}</div><h3>{q.title}</h3>{q.description&&<p className="muted compactText">{q.description}</p>}<div className="progress"><span style={{width:`${Math.min(100,pct)}%`}}/></div><div className="muted">{p}/{max} {q.unit} · {q.xp_reward} XP</div></div><div className="actions">{q.status==='completed'?<form action={reopen.bind(null,q.id)}><button className="btn">Вернуть</button></form>:<>{max>1&&<><form action={setProgress.bind(null,q.id,Math.max(0,p-1))}><button className="btn">−1</button></form><form action={setProgress.bind(null,q.id,Math.min(max,p+1))}><button className="btn">+1</button></form></>}<form action={complete.bind(null,q.id)}><button className="btn btnPrimary">Готово</button></form></>}</div></article>
 }
 
 export default async function QuestsPage(){
@@ -47,11 +50,29 @@ export default async function QuestsPage(){
   ])
   const active=(quests??[]).filter(q=>q.status==='active')
   const completed=(quests??[]).filter(q=>q.status==='completed')
+  const mainCount=active.filter(q=>q.quest_type==='main').length
+
+  const createForm=<form className="form" action={createQuest}>
+    <div className="field"><label>Название</label><input className="input" name="title" required placeholder="Закрыть 4 лабораторные"/></div>
+    <div className="field"><label>Описание</label><textarea className="input" name="description" placeholder="Зачем это важно и что должно измениться после завершения"/></div>
+    <div className="grid grid2"><div className="field"><label>Ветка</label><select className="input" name="branchId"><option value="">Без ветки</option>{branches?.map(b=><option value={b.id} key={b.id}>{b.icon} {b.name}</option>)}</select></div><div className="field"><label>Тип</label><select className="input" name="type" defaultValue="side"><option value="main">Главный</option><option value="medium">Средний</option><option value="side">Побочный</option></select></div></div>
+    <div className="grid grid3"><div className="field"><label>Цель</label><input className="input" type="number" min="1" name="max" defaultValue="1"/></div><div className="field"><label>Единица</label><input className="input" name="unit" placeholder="лабы"/></div><div className="field"><label>XP</label><input className="input" type="number" min="0" name="xp" defaultValue="100"/></div></div>
+    <button className="btn btnPrimary">Создать квест</button>
+  </form>
+
   return <>
-    <div className="eyebrow">Миссии персонажа</div><h1 className="title">Квесты</h1><p className="subtitle">Здесь живут разовые задачи и прогресс-квесты. Ежедневки остаются на экране «Сегодня».</p>
-    <section className="section grid grid3"><div className="card stat"><span className="muted">Активные</span><strong>{active.length}</strong></div><div className="card stat"><span className="muted">Завершённые</span><strong>{completed.length}</strong></div><div className="card stat"><span className="muted">Всего</span><strong>{quests?.length??0}</strong></div></section>
-    <section className="section grid grid2"><div className="card"><div className="eyebrow">Новая миссия</div><h2>Создать квест</h2><form className="form" action={createQuest}><div className="field"><label>Название</label><input className="input" name="title" required placeholder="Закрыть 4 лабораторные"/></div><div className="field"><label>Описание</label><textarea className="input" name="description" rows={3}/></div><div className="grid grid2"><div className="field"><label>Ветка</label><select className="input" name="branchId"><option value="">Без ветки</option>{branches?.map(b=><option value={b.id} key={b.id}>{b.icon} {b.name}</option>)}</select></div><div className="field"><label>Тип</label><select className="input" name="type" defaultValue="side"><option value="main">Главный</option><option value="medium">Средний</option><option value="side">Побочный</option></select></div></div><div className="grid grid3"><input className="input" type="number" min="1" name="max" defaultValue="1" title="Цель"/><input className="input" name="unit" placeholder="лабы"/><input className="input" type="number" min="0" name="xp" defaultValue="100" title="XP"/></div><button className="btn btnPrimary">Создать</button></form></div><div className="card"><div className="eyebrow">Логика</div><h2>Как использовать</h2><p className="muted">Квест на 1 шаг закрывается кнопкой «Готово». Для задач вроде «4 лабы» ставь цель 4 и отмечай прогресс через +1/−1. XP начисляется только при завершении и хранится в ledger.</p></div></section>
-    <section className="section"><div className="sectionHeading"><div><div className="eyebrow">В работе</div><h2>Активные квесты</h2></div><span className="pill">{active.length}</span></div><div className="grid">{active.length?active.map(q=><QuestCard q={q} key={q.id}/>):<div className="card muted">Активных квестов нет.</div>}</div></section>
-    <section className="section"><div className="sectionHeading"><div><div className="eyebrow">История</div><h2>Завершённые</h2></div><span className="pill">{completed.length}</span></div><div className="grid">{completed.length?completed.map(q=><QuestCard q={q} key={q.id}/>):<div className="card muted">Завершённых квестов пока нет.</div>}</div></section>
+    <header className="pageIntro"><div className="eyebrow">Миссии персонажа</div><h1 className="title">Квесты</h1><p className="subtitle">Разовые задачи и прогресс-квесты. Всё лишнее спрятано — перед глазами только то, что ты реально проходишь.</p></header>
+
+    <section className="section grid grid3 journeyStats"><div className="card stat"><span className="muted">Активные</span><strong>{active.length}</strong><small>сейчас в пути</small></div><div className="card stat"><span className="muted">Главные</span><strong>{mainCount}</strong><small>ключевых миссий</small></div><div className="card stat"><span className="muted">Завершённые</span><strong>{completed.length}</strong><small>часть истории пройдена</small></div></section>
+
+    <div className="section panelStack">
+      <CollapsiblePanel title="Активные квесты" subtitle="То, что двигает историю прямо сейчас" icon="⚔" meta={<span>{active.length}</span>} action={<ModalForm triggerLabel="+ Добавить квест" title="Новый квест" eyebrow="Новая миссия">{createForm}</ModalForm>}>
+        <div className="grid">{active.length?active.map(q=><QuestCard q={q} key={q.id}/>):<div className="emptyState"><strong>Путь пока свободен.</strong><span>Создай одну миссию, которую действительно хочешь продвинуть.</span></div>}</div>
+      </CollapsiblePanel>
+
+      <CollapsiblePanel title="Завершённые" subtitle="Пройденные миссии остаются частью истории" icon="✦" meta={<span>{completed.length}</span>} defaultOpen={false}>
+        <div className="grid">{completed.length?completed.map(q=><QuestCard q={q} key={q.id}/>):<div className="emptyState"><strong>История только начинается.</strong><span>Завершённые квесты появятся здесь.</span></div>}</div>
+      </CollapsiblePanel>
+    </div>
   </>
 }
