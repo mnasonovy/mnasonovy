@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 type Period = 'morning' | 'day' | 'evening' | 'night'
 
@@ -28,13 +28,13 @@ const palettes: Record<Period, { sky1: string; sky2: string; sky3: string; mount
 function FantasyBackdrop({ period }: { period: Period }) {
   const p = palettes[period]
   const isDark = period === 'night' || period === 'evening'
-  const stars = useMemo(() => Array.from({ length: 34 }, (_, i) => ({
+  const stars = useMemo(() => Array.from({ length: 42 }, (_, i) => ({
     cx: 35 + ((i * 97) % 1530),
     cy: 28 + ((i * 53) % 300),
     r: 0.7 + ((i * 7) % 3) * 0.45,
     delay: `${(i % 8) * .35}s`,
   })), [])
-  const fireflies = useMemo(() => Array.from({ length: 18 }, (_, i) => ({
+  const fireflies = useMemo(() => Array.from({ length: 24 }, (_, i) => ({
     cx: 90 + ((i * 139) % 1420),
     cy: 390 + ((i * 67) % 330),
     r: 1.8 + (i % 3) * .8,
@@ -45,7 +45,8 @@ function FantasyBackdrop({ period }: { period: Period }) {
     <defs>
       <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={p.sky1}/><stop offset=".56" stopColor={p.sky2}/><stop offset="1" stopColor={p.sky3}/></linearGradient>
       <linearGradient id="water" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={p.water}/><stop offset="1" stopColor="#172d32"/></linearGradient>
-      <radialGradient id="fireGlow"><stop offset="0" stopColor={p.glow} stopOpacity=".75"/><stop offset=".45" stopColor="#ef6a2e" stopOpacity=".26"/><stop offset="1" stopColor="#ef6a2e" stopOpacity="0"/></radialGradient>
+      <radialGradient id="fireGlow"><stop offset="0" stopColor={p.glow} stopOpacity=".88"/><stop offset=".45" stopColor="#ef6a2e" stopOpacity=".30"/><stop offset="1" stopColor="#ef6a2e" stopOpacity="0"/></radialGradient>
+      <radialGradient id="vignette"><stop offset="55%" stopColor="#000" stopOpacity="0"/><stop offset="100%" stopColor="#000" stopOpacity=".82"/></radialGradient>
       <filter id="blurGlow"><feGaussianBlur stdDeviation="10"/></filter>
     </defs>
 
@@ -76,7 +77,7 @@ function FantasyBackdrop({ period }: { period: Period }) {
       <path d="M1430 0H1540L1508 160L1575 280L1520 266L1558 410L1497 382L1518 560H1438L1450 382L1398 410L1430 265L1380 284L1446 160Z"/>
     </g>
 
-    <ellipse cx="1110" cy="720" rx="205" ry="150" fill="url(#fireGlow)" filter="url(#blurGlow)"/>
+    <ellipse className="campfireAura" cx="1110" cy="720" rx="205" ry="150" fill="url(#fireGlow)" filter="url(#blurGlow)"/>
     <g className="campfire" transform="translate(1115 730)">
       <path d="M-72 48L72 48" stroke="#5d3826" strokeWidth="20" strokeLinecap="round" transform="rotate(10)"/>
       <path d="M-72 48L72 48" stroke="#4b2d21" strokeWidth="20" strokeLinecap="round" transform="rotate(-12)"/>
@@ -85,19 +86,32 @@ function FantasyBackdrop({ period }: { period: Period }) {
     </g>
 
     {(period === 'evening' || period === 'night') && <g>{fireflies.map((f,i)=><circle key={i} className="firefly" {...f} fill="#ffd66f" style={{animationDelay:f.delay}}/>)}</g>}
-    <rect width="1600" height="900" fill="url(#vignette)" opacity=".15"/>
+    <rect width="1600" height="900" fill="url(#vignette)" opacity=".22"/>
   </svg>
 }
 
 export function AtmosphereShell({ children, displayName }: { children: React.ReactNode; displayName?: string }) {
   const [now, setNow] = useState(() => new Date())
   const [override, setOverride] = useState<Period | null>(null)
+  const [soundEnabled, setSoundEnabled] = useState(false)
+  const [admire, setAdmire] = useState(false)
+  const audioRef = useRef<AudioContext | null>(null)
 
   useEffect(() => {
     const tick = () => setNow(new Date())
     tick()
     const id = window.setInterval(tick, 30_000)
     return () => window.clearInterval(id)
+  }, [])
+
+  useEffect(() => {
+    const beginAdmire = () => setAdmire(true)
+    window.addEventListener('emberive:admire', beginAdmire)
+    return () => window.removeEventListener('emberive:admire', beginAdmire)
+  }, [])
+
+  useEffect(() => () => {
+    audioRef.current?.close().catch(() => undefined)
   }, [])
 
   const autoPeriod = periodForHour(now.getHours())
@@ -110,7 +124,39 @@ export function AtmosphereShell({ children, displayName }: { children: React.Rea
     document.documentElement.dataset.period = period
   }, [period])
 
-  return <div className={`atmosphere atmosphere-${period}`}>
+  async function toggleAtmosphere() {
+    if (soundEnabled) {
+      setSoundEnabled(false)
+      await audioRef.current?.close().catch(() => undefined)
+      audioRef.current = null
+      return
+    }
+
+    const audio = new AudioContext()
+    const buffer = audio.createBuffer(1, audio.sampleRate * 2, audio.sampleRate)
+    const data = buffer.getChannelData(0)
+    let last = 0
+    for (let i = 0; i < data.length; i++) {
+      const white = Math.random() * 2 - 1
+      last = last * .985 + white * .015
+      data[i] = last * 3.2
+    }
+    const source = audio.createBufferSource()
+    source.buffer = buffer
+    source.loop = true
+    const filter = audio.createBiquadFilter()
+    filter.type = 'lowpass'
+    filter.frequency.value = period === 'night' ? 720 : 980
+    const gain = audio.createGain()
+    gain.gain.value = .035
+    source.connect(filter).connect(gain).connect(audio.destination)
+    source.start()
+    await audio.resume()
+    audioRef.current = audio
+    setSoundEnabled(true)
+  }
+
+  return <div className={`atmosphere atmosphere-${period} ${admire ? 'is-admiring' : ''}`}>
     <FantasyBackdrop period={period}/>
     <div className="atmosphereShade"/>
     <div className="ambientBar">
@@ -118,11 +164,15 @@ export function AtmosphereShell({ children, displayName }: { children: React.Rea
         <span className="ambientOrb">{periods.find(p=>p.id===period)?.icon}</span>
         <div><strong>{greeting}{displayName ? `, ${displayName}` : ''}</strong><span>{time} · {date}</span></div>
       </div>
-      <div className="timeSwitcher" aria-label="Предпросмотр времени суток">
-        {periods.map(item=><button key={item.id} type="button" className={period===item.id?'isActive':''} onClick={()=>setOverride(item.id)} title={item.label}><span>{item.icon}</span><em>{item.label}</em></button>)}
-        <button type="button" className={override===null?'isAuto':''} onClick={()=>setOverride(null)} title="Автоматически по времени устройства"><span>◌</span><em>Авто</em></button>
+      <div className="ambientControls">
+        <button className={`atmosphereSound ${soundEnabled ? 'isActive' : ''}`} type="button" onClick={toggleAtmosphere} title="Звуки атмосферы"><span>{soundEnabled ? '♫' : '♪'}</span><em>Атмосфера</em></button>
+        <div className="timeSwitcher" aria-label="Предпросмотр времени суток">
+          {periods.map(item=><button key={item.id} type="button" className={period===item.id?'isActive':''} onClick={()=>setOverride(item.id)} title={item.label}><span>{item.icon}</span><em>{item.label}</em></button>)}
+          <button type="button" className={override===null?'isAuto':''} onClick={()=>setOverride(null)} title="Автоматически по времени устройства"><span>◌</span><em>Авто</em></button>
+        </div>
       </div>
     </div>
-    {children}
+    <div className="appWorld">{children}</div>
+    {admire && <button type="button" className="admireExitLayer" onClick={()=>setAdmire(false)} aria-label="Вернуться к интерфейсу"><span>Нажми в любое место, чтобы вернуться</span></button>}
   </div>
 }
