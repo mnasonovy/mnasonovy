@@ -1,0 +1,73 @@
+/* Full-bleed atmosphere art behind the live Emberive UI. */
+.referenceBackdrop{
+  position:fixed!important;
+  width:1px!important;
+  height:1px!important;
+  left:-9999px!important;
+  top:-9999px!important;
+  display:block!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+.referenceImage{
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100vh!important;
+  object-fit:cover!important;
+  object-position:center center!important;
+  z-index:0!important;
+  display:block!important;
+  opacity:1!important;
+  pointer-events:none!important;
+  filter:saturate(1.06) contrast(1.02)!important;
+  transform:scale(1.002);
+}
+.referenceVignette{
+  position:fixed!important;
+  inset:0!important;
+  z-index:1!important;
+  display:block!important;
+  pointer-events:none!important;
+  background:
+    linear-gradient(90deg,rgba(5,4,3,.64) 0%,rgba(8,5,3,.24) 18%,rgba(0,0,0,.02) 54%,rgba(3,2,2,.12) 100%),
+    linear-gradient(0deg,rgba(6,4,3,.42) 0%,transparent 34%,rgba(5,4,3,.12) 100%)!important;
+}
+.appWorld{position:relative!important;z-index:2!important;background:transparent!important;}
+body:has(.todayGame){background:#090704!important;}
+body:has(.todayGame) .shell{background:transparent!important;}
+body:has(.todayGame) .main{background:transparent!important;}
+body:has(.todayGame) .sidebar{
+  background:linear-gradient(180deg,rgba(16,12,9,.95),rgba(7,7,6,.96))!important;
+  backdrop-filter:blur(10px) saturate(.9)!important;
+}
+body:has(.todayGame) .gameHero{
+  background:transparent!important;
+  border-color:rgba(226,159,79,.28)!important;
+  box-shadow:0 22px 70px rgba(0,0,0,.28),inset 0 -80px 100px rgba(12,7,4,.16)!important;
+}
+body:has(.todayGame) .heroShade{
+  background:
+    linear-gradient(90deg,rgba(8,5,3,.84) 0%,rgba(10,7,4,.58) 24%,rgba(10,7,4,.13) 52%,rgba(0,0,0,0) 76%),
+    linear-gradient(0deg,rgba(8,5,3,.22),transparent 48%)!important;
+}
+body:has(.todayGame) .heroFocusPanel,
+body:has(.todayGame) .paperPanel{
+  backdrop-filter:blur(2px)!important;
+}
+body:has(.todayGame) .darkArc,
+body:has(.todayGame) .lowerHud .gamePanel{
+  background:linear-gradient(145deg,rgba(37,28,21,.94),rgba(15,14,12,.96))!important;
+  backdrop-filter:blur(8px)!important;
+}
+body:has(.todayGame) .ambientBar{z-index:100!important;}
+
+.atmosphere-morning .referenceImage{filter:saturate(1.08) brightness(1.04) contrast(1.02)!important;}
+.atmosphere-day .referenceImage{filter:saturate(1.06) brightness(1.03) contrast(1.01)!important;}
+.atmosphere-evening .referenceImage{filter:saturate(1.08) brightness(.92) contrast(1.04)!important;}
+.atmosphere-night .referenceImage{filter:saturate(1.03) brightness(.78) contrast(1.08)!important;}
+
+@media(max-width:979px){
+  .referenceImage{opacity:.72!important;}
+  .referenceVignette{background:linear-gradient(0deg,rgba(5,4,3,.58),rgba(5,4,3,.18))!important;}
+}
