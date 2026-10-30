@@ -8,6 +8,7 @@ import './scenes/day.css'
 import './scenes/evening.css'
 import './scenes/night.css'
 import './scene-layer.css'
+import './reference-today.css'
 import { TextareaAutosizeManager } from '@/components/auto-textarea'
 
 export const metadata: Metadata = {
