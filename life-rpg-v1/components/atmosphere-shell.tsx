@@ -18,19 +18,12 @@ function periodForHour(hour: number): Period {
   return 'night'
 }
 
-function extractBackgroundUrl(backgroundImage: string) {
-  const match = backgroundImage.match(/^url\((['"]?)(.*)\1\)$/)
-  return match?.[2] ?? null
-}
-
 export function AtmosphereShell({ children, displayName }: { children: React.ReactNode; displayName?: string }) {
   const [now, setNow] = useState(() => new Date())
   const [override, setOverride] = useState<Period | null>(null)
   const [soundEnabled, setSoundEnabled] = useState(false)
   const [admire, setAdmire] = useState(false)
-  const [artSrc, setArtSrc] = useState<string | null>(null)
   const audioRef = useRef<AudioContext | null>(null)
-  const referenceProbeRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     const tick = () => setNow(new Date())
@@ -57,39 +50,6 @@ export function AtmosphereShell({ children, displayName }: { children: React.Rea
 
   useEffect(() => {
     document.documentElement.dataset.period = period
-  }, [period])
-
-  useEffect(() => {
-    setArtSrc(null)
-    let cancelled = false
-    let image: HTMLImageElement | null = null
-
-    const frame = window.requestAnimationFrame(() => {
-      const probe = referenceProbeRef.current
-      if (!probe) return
-
-      const source = extractBackgroundUrl(window.getComputedStyle(probe).backgroundImage)
-      if (!source?.startsWith('data:image/')) return
-
-      image = new Image()
-      image.decoding = 'async'
-      image.onload = () => {
-        if (!cancelled) setArtSrc(source)
-      }
-      image.onerror = () => {
-        if (!cancelled) setArtSrc(null)
-      }
-      image.src = source
-    })
-
-    return () => {
-      cancelled = true
-      window.cancelAnimationFrame(frame)
-      if (image) {
-        image.onload = null
-        image.onerror = null
-      }
-    }
   }, [period])
 
   async function toggleAtmosphere() {
@@ -124,11 +84,8 @@ export function AtmosphereShell({ children, displayName }: { children: React.Rea
     setSoundEnabled(true)
   }
 
-  const referenceState = artSrc ? 'reference-ready' : 'reference-fallback'
-
-  return <div className={`atmosphere atmosphere-${period} ${referenceState} ${admire ? 'is-admiring' : ''}`}>
-    <div ref={referenceProbeRef} className="referenceBackdrop" aria-hidden="true" />
-    {artSrc && <img className="referenceImage" src={artSrc} alt="" aria-hidden="true" />}
+  return <div className={`atmosphere atmosphere-${period} reference-ready ${admire ? 'is-admiring' : ''}`}>
+    <div className="referenceBackdrop" aria-hidden="true" />
     <div className="referenceVignette" aria-hidden="true" />
     <div className="ambientBar">
       <div className="ambientGreeting">
