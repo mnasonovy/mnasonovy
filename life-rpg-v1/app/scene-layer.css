@@ -1,28 +1,21 @@
 /* Full-bleed atmosphere art behind the live Emberive UI. */
 .referenceBackdrop{
   position:fixed!important;
-  width:1px!important;
-  height:1px!important;
-  left:-9999px!important;
-  top:-9999px!important;
-  display:block!important;
-  visibility:hidden!important;
-  pointer-events:none!important;
-}
-.referenceImage{
-  position:fixed!important;
   inset:0!important;
   width:100vw!important;
   height:100vh!important;
-  object-fit:cover!important;
-  object-position:center center!important;
-  z-index:0!important;
   display:block!important;
-  opacity:1!important;
+  visibility:visible!important;
   pointer-events:none!important;
+  z-index:0!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+  opacity:1!important;
   filter:saturate(1.06) contrast(1.02)!important;
   transform:scale(1.002);
 }
+.referenceImage{display:none!important;}
 .referenceVignette{
   position:fixed!important;
   inset:0!important;
@@ -30,15 +23,15 @@
   display:block!important;
   pointer-events:none!important;
   background:
-    linear-gradient(90deg,rgba(5,4,3,.64) 0%,rgba(8,5,3,.24) 18%,rgba(0,0,0,.02) 54%,rgba(3,2,2,.12) 100%),
-    linear-gradient(0deg,rgba(6,4,3,.42) 0%,transparent 34%,rgba(5,4,3,.12) 100%)!important;
+    linear-gradient(90deg,rgba(5,4,3,.62) 0%,rgba(8,5,3,.20) 18%,rgba(0,0,0,.01) 54%,rgba(3,2,2,.10) 100%),
+    linear-gradient(0deg,rgba(6,4,3,.34) 0%,transparent 34%,rgba(5,4,3,.08) 100%)!important;
 }
 .appWorld{position:relative!important;z-index:2!important;background:transparent!important;}
 body:has(.todayGame){background:#090704!important;}
 body:has(.todayGame) .shell{background:transparent!important;}
 body:has(.todayGame) .main{background:transparent!important;}
 body:has(.todayGame) .sidebar{
-  background:linear-gradient(180deg,rgba(16,12,9,.95),rgba(7,7,6,.96))!important;
+  background:linear-gradient(180deg,rgba(16,12,9,.94),rgba(7,7,6,.95))!important;
   backdrop-filter:blur(10px) saturate(.9)!important;
 }
 body:has(.todayGame) .gameHero{
@@ -52,9 +45,7 @@ body:has(.todayGame) .heroShade{
     linear-gradient(0deg,rgba(8,5,3,.22),transparent 48%)!important;
 }
 body:has(.todayGame) .heroFocusPanel,
-body:has(.todayGame) .paperPanel{
-  backdrop-filter:blur(2px)!important;
-}
+body:has(.todayGame) .paperPanel{backdrop-filter:blur(2px)!important;}
 body:has(.todayGame) .darkArc,
 body:has(.todayGame) .lowerHud .gamePanel{
   background:linear-gradient(145deg,rgba(37,28,21,.94),rgba(15,14,12,.96))!important;
@@ -62,12 +53,12 @@ body:has(.todayGame) .lowerHud .gamePanel{
 }
 body:has(.todayGame) .ambientBar{z-index:100!important;}
 
-.atmosphere-morning .referenceImage{filter:saturate(1.08) brightness(1.04) contrast(1.02)!important;}
-.atmosphere-day .referenceImage{filter:saturate(1.06) brightness(1.03) contrast(1.01)!important;}
-.atmosphere-evening .referenceImage{filter:saturate(1.08) brightness(.92) contrast(1.04)!important;}
-.atmosphere-night .referenceImage{filter:saturate(1.03) brightness(.78) contrast(1.08)!important;}
+.atmosphere-morning .referenceBackdrop{filter:saturate(1.08) brightness(1.04) contrast(1.02)!important;}
+.atmosphere-day .referenceBackdrop{filter:saturate(1.06) brightness(1.03) contrast(1.01)!important;}
+.atmosphere-evening .referenceBackdrop{filter:saturate(1.08) brightness(.92) contrast(1.04)!important;}
+.atmosphere-night .referenceBackdrop{filter:saturate(1.03) brightness(.78) contrast(1.08)!important;}
 
 @media(max-width:979px){
-  .referenceImage{opacity:.72!important;}
+  .referenceBackdrop{opacity:.72!important;}
   .referenceVignette{background:linear-gradient(0deg,rgba(5,4,3,.58),rgba(5,4,3,.18))!important;}
 }
