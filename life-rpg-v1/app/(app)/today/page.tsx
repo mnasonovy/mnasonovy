@@ -201,6 +201,29 @@ export default async function TodayPage() {
 
   const branchForm=<form className="form" action={createBranch}><div className="grid grid2"><div className="field"><label>Иконка</label><input className="input" name="icon" defaultValue="🌿"/></div><div className="field"><label>Название</label><input className="input" name="name" placeholder="Учёба" required/></div></div><button className="btn btnPrimary">Создать ветку</button></form>
 
+  const dailyContent=(dailyInstances??[]).map(instance=>{
+    const template=templateById.get(instance.template_id)
+    const items=itemsByInstance.get(instance.id)??[]
+    const completed=items.filter(item=>item.is_completed).length
+    const branch=template?.branch_id?branchById.get(template.branch_id):null
+    return <div className={`ritualGroup ${instance.status==='completed'?'isDone':''}`} key={instance.id}>
+      <div className="ritualGroupTitle"><span>{branch?.icon || '✦'}</span><strong>{template?.title??'Ежедневный ритуал'}</strong><small>{completed}/{items.length}</small></div>
+      {items.map(item=><form action={toggleDailyItem.bind(null,item.id,!item.is_completed)} key={item.id}><button className={`ritualRow ${item.is_completed?'isDone':''}`} type="submit"><span className="ritualCheck">{item.is_completed?'✓':''}</span><span>{item.title}</span></button></form>)}
+    </div>
+  })
+
+  const arcContent=(arcs??[]).slice(0,3).map((arc,index)=>{
+    const arcNodes=(nodes??[]).filter(node=>node.arc_id===arc.id)
+    const done=arcNodes.filter(node=>node.status==='completed').length
+    const pct=arcNodes.length?Math.round(done/arcNodes.length*100):0
+    const branch=branchById.get(arc.branch_id)
+    return <a href="/map" className="arcMini" key={arc.id}>
+      <div className="arcMiniArt"><span>{branch?.icon || '✦'}</span></div>
+      <div><strong>{index+1}. {arc.title}</strong><small>{branch?.name || 'Арка развития'}</small><div className="fantasyProgress isThin"><span style={{width:`${pct}%`}}/></div></div>
+      <b>{pct}%</b>
+    </a>
+  })
+
   return <div className="todayExperience">
     <CampfireSync intensity={fireIntensity}/>
 
@@ -232,25 +255,14 @@ export default async function TodayPage() {
 
         <article className="parchmentPanel dailyParchment">
           <div className="parchmentHeading"><div><span className="panelIcon">♨</span><h2>Ежедневные ритуалы</h2></div><span className="inkMeta">{completedDaily}/{totalDaily}</span></div>
-          <div className="ritualList">
-            {dailyInstances?.length?dailyInstances.map(instance=>{const template=templateById.get(instance.template_id);const items=itemsByInstance.get(instance.id)??[];const completed=items.filter(item=>item.is_completed).length;const branch=template?.branch_id?branchById.get(template.branch_id):null;return <div className={`ritualGroup ${instance.status==='completed'?'isDone':''}`} key={instance.id}>
-              <div className="ritualGroupTitle"><span>{branch?.icon || '✦'}</span><strong>{template?.title??'Ежедневный ритуал'}</strong><small>{completed}/{items.length}</small></div>
-              {items.map(item=><form action={toggleDailyItem.bind(null,item.id,!item.is_completed)} key={item.id}><button className={`ritualRow ${item.is_completed?'isDone':''}`} type="submit"><span className="ritualCheck">{item.is_completed?'✓':''}</span><span>{item.title}</span></button></form>)}
-            </div>):<div className="inkEmpty"><strong>Ритуалов пока нет.</strong><span>Добавь первый ежедневный ритуал.</span></div>}
-          </div>
+          <div className="ritualList">{dailyContent.length?dailyContent:<div className="inkEmpty"><strong>Ритуалов пока нет.</strong><span>Добавь первый ежедневный ритуал.</span></div>}</div>
           <div className="panelBottomActions"><ModalForm triggerLabel="+ Ритуал" title="Новая ежедневка" eyebrow="Новый ритуал" triggerClassName="inkButton">{dailyForm}</ModalForm></div>
           {activeDaily.length>0&&<details className="ritualManager"><summary>Управление шаблонами</summary>{activeDaily.map(template=><div className="ritualTemplate" key={template.id}><span>{template.title}</span><form action={disableDailyTemplate.bind(null,template.id)}><button>Отключить</button></form></div>)}</details>}
         </article>
 
         <article className="parchmentPanel arcsParchment">
           <div className="parchmentHeading"><div><span className="panelIcon">▰</span><h2>Текущие арки</h2></div><a className="inkArrow" href="/map" aria-label="Открыть карту">›</a></div>
-          <div className="arcMiniList">
-            {(arcs??[]).length?(arcs??[]).slice(0,3).map((arc,index)=>{const arcNodes=(nodes??[]).filter(node=>node.arc_id===arc.id);const done=arcNodes.filter(node=>node.status==='completed').length;const pct=arcNodes.length?Math.round(done/arcNodes.length*100):0;const branch=branchById.get(arc.branch_id);return <a href="/map" className="arcMini" key={arc.id}>
-              <div className="arcMiniArt"><span>{branch?.icon || '✦'}</span></div>
-              <div><strong>{index+1}. {arc.title}</strong><small>{branch?.name || 'Арка развития'}</small><div className="fantasyProgress isThin"><span style={{width:`${pct}%`}}/></div></div>
-              <b>{pct}%</b>
-            </a>}):<div className="inkEmpty"><strong>Активных арок пока нет.</strong><span>Создай большую историю на карте развития.</span></div>}
-          </div>
+          <div className="arcMiniList">{arcContent.length?arcContent:<div className="inkEmpty"><strong>Активных арок пока нет.</strong><span>Создай большую историю на карте развития.</span></div>}</div>
           <div className="panelBottomActions"><ModalForm triggerLabel="+ Ветка" title="Новая ветка" eyebrow="Новое направление" triggerClassName="inkButton">{branchForm}</ModalForm></div>
         </article>
       </div>
