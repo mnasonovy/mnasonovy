@@ -3,6 +3,11 @@ import './globals.css'
 import './autosize.css'
 import './today-fantasy.css'
 import './today-polish.css'
+import './scenes/morning.css'
+import './scenes/day.css'
+import './scenes/evening.css'
+import './scenes/night.css'
+import './scene-layer.css'
 import { TextareaAutosizeManager } from '@/components/auto-textarea'
 
 export const metadata: Metadata = {
