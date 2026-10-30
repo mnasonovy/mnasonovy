@@ -1,0 +1,96 @@
+/* Final desktop polish for Emberive Today */
+@media (min-width: 980px){
+  body:has(.todayGame){background:#0a0704;color:#ead9bc;overflow-x:hidden}
+  body:has(.todayGame) .shell{grid-template-columns:248px minmax(0,1fr)!important;background:radial-gradient(circle at 58% 0%,rgba(84,52,27,.16),transparent 38%),#0a0704!important}
+  body:has(.todayGame) .sidebar{width:248px!important;padding:26px 18px 20px!important;background:linear-gradient(180deg,#120d09 0%,#0a0806 58%,#080706 100%)!important;border-right:1px solid rgba(218,153,76,.32)!important;box-shadow:18px 0 60px rgba(0,0,0,.42)!important}
+  body:has(.todayGame) .brandBlock{padding:8px 6px 25px!important;margin-bottom:18px!important}
+  body:has(.todayGame) .brand{font-size:29px!important;letter-spacing:.01em}
+  body:has(.todayGame) .brandTagline{font-size:10px!important;line-height:1.4!important;margin-top:4px!important}
+  body:has(.todayGame) .brandMark{width:46px!important;height:46px!important}
+  body:has(.todayGame) .nav{gap:7px!important}
+  body:has(.todayGame) .nav a{min-height:46px!important;padding:11px 13px!important;font-size:15px!important;border:1px solid transparent!important}
+  body:has(.todayGame) .nav a:hover{background:rgba(120,72,34,.2)!important;border-color:rgba(219,149,70,.18)!important;color:#f3d6aa!important}
+  body:has(.todayGame) .nav a.isActive{background:linear-gradient(90deg,rgba(127,66,28,.9),rgba(50,33,21,.8))!important;border-color:rgba(238,161,73,.58)!important;box-shadow:inset 3px 0 #f6ab55,0 7px 20px rgba(0,0,0,.32),0 0 20px rgba(225,132,47,.08)!important}
+  body:has(.todayGame) .main{max-width:1780px!important;width:calc(100% - 36px)!important;margin:0 auto!important;padding:0 0 48px!important}
+  body:has(.todayGame) .todayGame{padding-top:0}
+
+  body:has(.todayGame) .gameHero{height:550px!important;margin:0!important;border-radius:0 0 14px 14px!important;border:1px solid rgba(193,120,53,.48)!important;border-top:0!important;background-position:center 48%!important;box-shadow:0 22px 70px rgba(0,0,0,.55),inset 0 -80px 90px rgba(13,8,4,.25)!important}
+  body:has(.todayGame) .atmosphere-night .gameHero{filter:saturate(.88) brightness(.78) hue-rotate(8deg)!important}
+  body:has(.todayGame) .atmosphere-evening .gameHero{filter:saturate(.98) sepia(.12) hue-rotate(-9deg) brightness(.9)!important}
+  body:has(.todayGame) .heroShade{background:linear-gradient(90deg,rgba(10,7,5,.9) 0%,rgba(12,8,5,.72) 22%,rgba(14,9,6,.3) 43%,rgba(0,0,0,.04) 72%),linear-gradient(0deg,rgba(9,6,4,.52),transparent 48%)!important}
+  body:has(.todayGame) .heroCopy{left:46px!important;top:50px!important;width:520px!important}
+  body:has(.todayGame) .heroDate{font-size:14px!important;letter-spacing:.04em!important;color:#e8bd79!important}
+  body:has(.todayGame) .heroCopy h1{font-size:56px!important;line-height:.98!important;max-width:520px!important;text-shadow:0 4px 24px rgba(0,0,0,.78)!important}
+  body:has(.todayGame) .heroCopy p{font-size:18px!important;line-height:1.5!important;width:475px!important;color:#ebdcc5!important;text-shadow:0 2px 14px rgba(0,0,0,.78)!important}
+  body:has(.todayGame) .heroFocusPanel{left:42px!important;top:228px!important;width:468px!important;min-height:210px!important;padding:19px 20px 17px!important;border-radius:9px!important;border-color:#95602e!important;background:linear-gradient(112deg,#e5ca97 0%,#f5e3bd 51%,#d9b477 100%)!important;box-shadow:0 18px 45px rgba(0,0,0,.47),inset 0 0 0 2px rgba(255,246,218,.36),inset 0 0 45px rgba(91,52,22,.13)!important}
+  body:has(.todayGame) .heroFocusPanel:after{content:"";position:absolute;inset:7px;border:1px solid rgba(93,57,27,.14);border-radius:5px;pointer-events:none}
+  body:has(.todayGame) .hudPanelTitle{font-size:20px!important;padding-bottom:11px!important}
+  body:has(.todayGame) .heroFocusBody{grid-template-columns:72px 1fr!important;gap:15px!important;padding-top:15px!important}
+  body:has(.todayGame) .focusRune{height:72px!important;font-size:32px!important}
+  body:has(.todayGame) .focusMain h2{font-size:21px!important;line-height:1.15!important}
+  body:has(.todayGame) .focusMain p{font-size:13px!important;line-height:1.45!important;margin-bottom:11px!important}
+  body:has(.todayGame) .sceneAdmireButton{right:30px!important;bottom:78px!important;padding:12px 20px!important;font-size:14px!important;border-radius:7px!important;box-shadow:0 10px 28px rgba(0,0,0,.4),inset 0 0 0 1px rgba(255,220,158,.08)!important}
+  body:has(.todayGame) .heroStats{left:24px!important;right:24px!important;bottom:15px!important;height:56px!important;border-radius:7px!important;background:linear-gradient(180deg,rgba(31,23,17,.97),rgba(17,14,11,.97))!important;border-color:rgba(221,149,68,.38)!important;overflow:hidden!important}
+  body:has(.todayGame) .heroStats>div{grid-template-columns:42px auto!important;grid-template-rows:24px 15px!important;padding:7px 16px!important}
+  body:has(.todayGame) .heroStats span{font-size:23px!important}
+  body:has(.todayGame) .heroStats b{font-size:18px!important}
+  body:has(.todayGame) .heroStats small{font-size:10px!important;letter-spacing:.02em!important}
+
+  body:has(.todayGame) .hudGrid{grid-template-columns:1.03fr 1.03fr .84fr!important;gap:14px!important;margin-top:14px!important}
+  body:has(.todayGame) .lowerHud{grid-template-columns:1.08fr .86fr .92fr 1.14fr!important;gap:14px!important;margin-top:14px!important}
+  body:has(.todayGame) .gamePanel{min-height:315px!important;border-radius:10px!important;border-width:1px!important;box-shadow:0 14px 38px rgba(0,0,0,.35)!important}
+  body:has(.todayGame) .gamePanel header{height:58px!important;padding:0 18px!important}
+  body:has(.todayGame) .gamePanel header>div{gap:11px!important}
+  body:has(.todayGame) .gamePanel h2{font-size:20px!important;letter-spacing:.005em!important}
+  body:has(.todayGame) .gamePanel header small{font-size:11px!important}
+  body:has(.todayGame) .paperPanel{background:linear-gradient(105deg,#dfc38e 0%,#f2ddb4 50%,#d7b277 100%)!important;border-color:#8f592a!important;box-shadow:0 15px 40px rgba(0,0,0,.35),inset 0 0 0 2px rgba(255,245,215,.28)!important}
+  body:has(.todayGame) .paperPanel:after{content:"";position:absolute;inset:8px;border:1px solid rgba(93,56,25,.1);border-radius:6px;pointer-events:none}
+  body:has(.todayGame) .ritualRows,body:has(.todayGame) .questRows{padding:10px 16px 8px!important}
+  body:has(.todayGame) .paperRow{grid-template-columns:36px 1fr 24px!important;padding:10px 5px!important;font-size:14px!important}
+  body:has(.todayGame) .rowIcon{font-size:20px!important}
+  body:has(.todayGame) .paperQuest{grid-template-columns:40px 1fr 46px 30px!important;gap:10px!important;padding:11px 4px!important;font-size:12px!important}
+  body:has(.todayGame) .paperQuest strong{font-size:14px!important}
+  body:has(.todayGame) .questBadge{width:36px!important;height:36px!important;font-size:19px!important}
+  body:has(.todayGame) .panelEmpty{padding:92px 20px!important;font-size:14px!important;line-height:1.5!important}
+  body:has(.todayGame) .gamePanel footer{left:14px!important;right:14px!important;bottom:10px!important}
+  body:has(.todayGame) .panelLink{font-size:12px!important}
+  body:has(.todayGame) .darkArc{background:radial-gradient(circle at 80% 0%,rgba(106,65,34,.22),transparent 32%),linear-gradient(150deg,#2a1d15 0%,#17120f 64%,#100e0c 100%)!important;border-color:rgba(213,143,67,.5)!important}
+  body:has(.todayGame) .arcBody{padding:13px 16px 30px!important}
+  body:has(.todayGame) .arcScene{height:100px!important;padding:14px!important;border-radius:6px!important}
+  body:has(.todayGame) .arcScene>span{font-size:38px!important}
+  body:has(.todayGame) .arcScene strong{font-size:18px!important}
+  body:has(.todayGame) .arcBody p{font-size:12px!important;line-height:1.5!important}
+  body:has(.todayGame) .arcBody h3{font-size:14px!important}
+  body:has(.todayGame) .bossList{font-size:12px!important;gap:8px!important}
+
+  body:has(.todayGame) .lowerHud .gamePanel{min-height:238px!important;border-radius:9px!important;background:linear-gradient(180deg,rgba(34,27,22,.98),rgba(18,15,13,.99))!important}
+  body:has(.todayGame) .statRows{padding:15px 17px!important;gap:14px!important}
+  body:has(.todayGame) .statRows>div{grid-template-columns:105px 1fr 42px!important;gap:10px!important;font-size:12px!important}
+  body:has(.todayGame) .statRows i{height:9px!important}
+  body:has(.todayGame) .inventoryRows{padding:14px 17px!important;gap:10px!important}
+  body:has(.todayGame) .inventoryRows>div{font-size:12px!important}
+  body:has(.todayGame) .inventoryRows span{font-size:23px!important}
+  body:has(.todayGame) .equipmentPanel ul{margin-top:14px!important;padding-left:38px!important;font-size:12px!important;line-height:1.8!important}
+  body:has(.todayGame) .goalPanel p{padding:13px 17px 0!important;font-size:12px!important;line-height:1.5!important}
+  body:has(.todayGame) .goalSteps{padding:20px 12px!important}
+  body:has(.todayGame) .goalSteps span{min-width:86px!important;padding:10px 14px!important;font-size:14px!important}
+
+  body:has(.todayGame) .ambientBar{top:18px!important;right:max(28px,calc((100vw - 2028px)/2 + 28px))!important}
+  body:has(.todayGame) .atmosphereSound{padding:9px 14px!important}
+}
+
+@media (min-width:1600px) and (max-width:2100px){
+  body:has(.todayGame) .main{max-width:1680px!important}
+}
+
+@media (min-width:980px) and (max-width:1450px){
+  body:has(.todayGame) .shell{grid-template-columns:214px minmax(0,1fr)!important}
+  body:has(.todayGame) .sidebar{width:214px!important;padding-left:14px!important;padding-right:14px!important}
+  body:has(.todayGame) .main{width:calc(100% - 24px)!important}
+  body:has(.todayGame) .gameHero{height:510px!important}
+  body:has(.todayGame) .heroCopy h1{font-size:48px!important}
+  body:has(.todayGame) .heroFocusPanel{width:430px!important}
+  body:has(.todayGame) .hudGrid{grid-template-columns:1fr 1fr!important}
+  body:has(.todayGame) .darkArc{grid-column:1/-1!important}
+  body:has(.todayGame) .lowerHud{grid-template-columns:1fr 1fr!important}
+}
