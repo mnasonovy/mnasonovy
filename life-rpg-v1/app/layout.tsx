@@ -6,6 +6,7 @@ import './scenes/morning.css'
 import './scenes/day.css'
 import './scenes/evening.css'
 import './scenes/night.css'
+import './exact-reference.css'
 import { TextareaAutosizeManager } from '@/components/auto-textarea'
 
 export const metadata: Metadata = {
