@@ -1,171 +1,320 @@
-/* Exact-reference desktop canvas. Never hide the live UI until the approved artwork has decoded successfully. */
+/* Desktop composition reset for Today. The live UI is the design; reference artwork never replaces it. */
+.referenceBackdrop,
+.referenceImage,
+.referenceVignette { display:none!important; }
+
 @media (min-width: 980px) {
-  body:has(.todayGame) { background:#090603; }
-  body:has(.todayGame) .atmosphere { min-height:100vh; background:#090603; }
-
-  /* CSS scene files are only used as hidden probes for the image data. */
-  body:has(.todayGame) .referenceBackdrop {
-    position:fixed;
-    width:1px;
-    height:1px;
-    left:-9999px;
-    top:-9999px;
-    opacity:0;
-    pointer-events:none;
-    overflow:hidden;
-  }
-  body:has(.todayGame) .referenceImage {
-    position:fixed;
-    inset:0;
-    z-index:0;
-    width:100vw;
-    height:100vh;
-    object-fit:cover;
-    object-position:center center;
-    pointer-events:none;
-    user-select:none;
-  }
-  body:has(.todayGame) .referenceVignette { display:none; }
-
-  /* FALLBACK: normal live Emberive UI stays fully visible while artwork is loading or if decoding fails. */
-  body:has(.todayGame) .reference-fallback .appWorld { position:relative; z-index:2; }
-  body:has(.todayGame) .reference-fallback .todayGame { opacity:1!important; pointer-events:auto!important; }
-  body:has(.todayGame) .reference-fallback .sidebar { opacity:1!important; pointer-events:auto!important; }
-  body:has(.todayGame) .reference-fallback .brandBlock,
-  body:has(.todayGame) .reference-fallback .sidebarFooter,
-  body:has(.todayGame) .reference-fallback .ambientControls { opacity:1!important; pointer-events:auto!important; }
-
-  /* EXACT MODE: only enabled after the selected WebP has decoded in the browser. */
-  body:has(.todayGame) .reference-ready { position:fixed; inset:0; overflow:hidden; }
-  body:has(.todayGame) .reference-ready .appWorld { position:relative; z-index:2; width:100%; height:100vh; }
-  body:has(.todayGame) .reference-ready .shell {
-    position:relative;
-    z-index:2;
-    width:100%;
-    height:100vh;
-    min-height:0!important;
-    grid-template-columns:13.05% minmax(0,1fr)!important;
-    background:transparent!important;
+  body:has(.todayGame) {
+    background:
+      radial-gradient(circle at 76% 8%, rgba(147,78,32,.12), transparent 28%),
+      radial-gradient(circle at 28% 92%, rgba(110,58,28,.08), transparent 34%),
+      #0a0806;
+    overflow-x:hidden;
   }
 
-  /* Sidebar is already painted into the artwork. Keep invisible navigation hitboxes. */
-  body:has(.todayGame) .reference-ready .sidebar {
+  body:has(.todayGame) .atmosphere,
+  body:has(.todayGame) .reference-ready,
+  body:has(.todayGame) .reference-fallback {
     position:relative!important;
-    width:auto!important;
-    height:100vh!important;
-    padding:0!important;
+    inset:auto!important;
+    min-height:100vh!important;
+    overflow:visible!important;
     background:transparent!important;
-    border:0!important;
-    box-shadow:none!important;
-    z-index:20!important;
   }
-  body:has(.todayGame) .reference-ready .brandBlock,
-  body:has(.todayGame) .reference-ready .sidebarFooter { opacity:0!important; pointer-events:none!important; }
-  body:has(.todayGame) .reference-ready .nav {
-    position:absolute!important;
-    left:0!important;
-    right:0!important;
-    top:14.7vh!important;
-    display:grid!important;
-    gap:.4vh!important;
-    padding:0 1.1vw!important;
-  }
-  body:has(.todayGame) .reference-ready .nav a {
-    height:5.8vh!important;
-    min-height:44px!important;
-    padding:0!important;
-    border:0!important;
-    background:transparent!important;
-    box-shadow:none!important;
-    color:transparent!important;
-    text-shadow:none!important;
-    opacity:.01!important;
-  }
-  body:has(.todayGame) .reference-ready .nav a * { opacity:0!important; }
-  body:has(.todayGame) .reference-ready .mobileNav { display:none!important; }
 
-  /* Existing real Today UI remains functional as an invisible interaction layer. */
+  body:has(.todayGame) .appWorld {
+    position:relative!important;
+    z-index:2!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:100vh!important;
+    opacity:1!important;
+  }
+
+  body:has(.todayGame) .shell {
+    display:grid!important;
+    grid-template-columns:232px minmax(0,1fr)!important;
+    width:100%!important;
+    min-height:100vh!important;
+    height:auto!important;
+    background:transparent!important;
+  }
+
+  body:has(.todayGame) .sidebar,
+  body:has(.todayGame) .reference-ready .sidebar {
+    position:sticky!important;
+    top:0!important;
+    width:232px!important;
+    height:100vh!important;
+    padding:22px 16px 18px!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+    background:
+      linear-gradient(180deg, rgba(16,13,10,.985), rgba(9,9,8,.985))!important;
+    border-right:1px solid rgba(218,151,74,.2)!important;
+    box-shadow:18px 0 55px rgba(0,0,0,.34)!important;
+    z-index:50!important;
+  }
+
+  body:has(.todayGame) .brandBlock,
+  body:has(.todayGame) .sidebarFooter,
+  body:has(.todayGame) .reference-ready .brandBlock,
+  body:has(.todayGame) .reference-ready .sidebarFooter {
+    opacity:1!important;
+    pointer-events:auto!important;
+  }
+
+  body:has(.todayGame) .nav,
+  body:has(.todayGame) .reference-ready .nav {
+    position:static!important;
+    display:grid!important;
+    gap:5px!important;
+    padding:0!important;
+  }
+
+  body:has(.todayGame) .nav a,
+  body:has(.todayGame) .reference-ready .nav a {
+    min-height:42px!important;
+    height:auto!important;
+    padding:10px 11px!important;
+    opacity:1!important;
+    color:#cdbda5!important;
+    background:transparent!important;
+    border:1px solid transparent!important;
+    text-shadow:none!important;
+    border-radius:9px!important;
+  }
+
+  body:has(.todayGame) .nav a * { opacity:1!important; }
+  body:has(.todayGame) .mobileNav { display:none!important; }
+
+  body:has(.todayGame) .main,
   body:has(.todayGame) .reference-ready .main {
     position:relative!important;
     width:100%!important;
-    height:100vh!important;
     max-width:none!important;
+    height:auto!important;
+    min-height:100vh!important;
     margin:0!important;
-    padding:0!important;
-    overflow:hidden!important;
+    padding:28px clamp(24px,2.4vw,44px) 64px!important;
+    overflow:visible!important;
     background:transparent!important;
   }
-  body:has(.todayGame) .reference-ready .todayGame {
-    position:absolute!important;
-    inset:0!important;
+
+  body:has(.todayGame) .todayGame,
+  body:has(.todayGame) .reference-ready .todayGame,
+  body:has(.todayGame) .reference-fallback .todayGame {
+    position:relative!important;
+    inset:auto!important;
+    z-index:2!important;
+    width:min(1560px,100%)!important;
     min-height:0!important;
-    opacity:.001!important;
-    z-index:30!important;
+    margin:0 auto!important;
+    opacity:1!important;
     pointer-events:auto!important;
   }
-  body:has(.todayGame) .reference-ready .todayGame * { pointer-events:auto; }
 
-  body:has(.todayGame) .reference-ready .questBoardAdd,
-  body:has(.todayGame) .reference-ready .questAddScroll,
-  body:has(.todayGame) .reference-ready .panelLink { cursor:pointer!important; }
-
-  /* Actual controls cover their painted counterparts only after art is ready. */
+  body:has(.todayGame) .ambientBar,
   body:has(.todayGame) .reference-ready .ambientBar {
     position:fixed!important;
-    z-index:70!important;
-    top:1.5vh!important;
-    right:1.5vw!important;
+    top:18px!important;
+    right:28px!important;
     left:auto!important;
-    width:26vw!important;
-    height:5.2vh!important;
-    min-height:42px!important;
+    z-index:90!important;
+    width:auto!important;
+    height:auto!important;
+    min-height:0!important;
     padding:0!important;
     background:transparent!important;
     border:0!important;
     box-shadow:none!important;
     pointer-events:none!important;
   }
-  body:has(.todayGame) .reference-ready .ambientGreeting { display:none!important; }
-  body:has(.todayGame) .reference-ready .ambientControls {
-    width:100%!important;
-    height:100%!important;
-    justify-content:flex-end!important;
-    gap:.5vw!important;
-    pointer-events:auto!important;
-    opacity:.01!important;
-  }
-  body:has(.todayGame) .reference-ready .atmosphereSound { width:11vw!important; height:100%!important; }
-  body:has(.todayGame) .reference-ready .timeSwitcher { height:100%!important; }
 
-  body:has(.todayGame) .reference-ready.is-admiring .appWorld,
-  body:has(.todayGame) .reference-ready.is-admiring .ambientBar { opacity:0!important; pointer-events:none!important; }
-  body:has(.todayGame) .admireExitLayer {
-    position:fixed;
-    inset:0;
-    z-index:200;
-    border:0;
-    background:transparent;
-    cursor:pointer;
-    color:#f5dfb8;
+  body:has(.todayGame) .ambientGreeting { display:none!important; }
+  body:has(.todayGame) .ambientControls,
+  body:has(.todayGame) .reference-ready .ambientControls {
+    opacity:1!important;
+    width:auto!important;
+    height:auto!important;
+    gap:8px!important;
+    pointer-events:auto!important;
   }
-  body:has(.todayGame) .admireExitLayer span {
-    position:absolute;
-    left:50%;
-    bottom:22px;
-    transform:translateX(-50%);
-    padding:8px 14px;
-    border:1px solid rgba(221,166,90,.35);
-    border-radius:999px;
-    background:rgba(18,12,8,.7);
-    backdrop-filter:blur(8px);
-    font:12px Georgia,serif;
+
+  body:has(.todayGame) .atmosphereSound,
+  body:has(.todayGame) .reference-ready .atmosphereSound {
+    width:auto!important;
+    height:auto!important;
+  }
+
+  /* Hero */
+  body:has(.todayGame) .gameHero {
+    height:500px!important;
+    border-radius:20px!important;
+    border:1px solid rgba(218,151,74,.38)!important;
+    overflow:hidden!important;
+    background-position:center 43%!important;
+    box-shadow:0 24px 70px rgba(0,0,0,.48), inset 0 0 0 1px rgba(255,221,164,.035)!important;
+  }
+
+  body:has(.todayGame) .atmosphere-night .gameHero {
+    filter:saturate(.86) brightness(.72) hue-rotate(8deg)!important;
+  }
+
+  body:has(.todayGame) .heroShade {
+    background:
+      linear-gradient(90deg, rgba(11,8,5,.95) 0%, rgba(14,10,7,.78) 31%, rgba(15,10,7,.28) 58%, rgba(8,7,6,.08) 100%),
+      linear-gradient(0deg, rgba(8,6,5,.78) 0%, rgba(8,6,5,.08) 42%, rgba(5,5,5,.12) 100%)!important;
+  }
+
+  body:has(.todayGame) .heroCopy {
+    top:46px!important;
+    left:44px!important;
+    width:430px!important;
+  }
+
+  body:has(.todayGame) .heroDate {
+    margin-bottom:8px!important;
+    color:#e4b976!important;
+    font-size:13px!important;
+    letter-spacing:.03em!important;
+  }
+
+  body:has(.todayGame) .heroCopy h1 {
+    max-width:430px!important;
+    font-size:48px!important;
+    line-height:.98!important;
+    letter-spacing:-.025em!important;
+  }
+
+  body:has(.todayGame) .heroCopy p {
+    width:390px!important;
+    margin-top:12px!important;
+    color:#d5c3aa!important;
+    font-size:15px!important;
+    line-height:1.5!important;
+  }
+
+  body:has(.todayGame) .heroFocusPanel {
+    top:205px!important;
+    left:40px!important;
+    width:430px!important;
+    min-height:184px!important;
+    padding:18px 20px 16px!important;
+    border-radius:10px!important;
+    background:
+      linear-gradient(105deg, rgba(244,222,178,.97), rgba(224,194,142,.96))!important;
+    box-shadow:0 18px 42px rgba(0,0,0,.42), inset 0 0 0 1px rgba(255,249,222,.46)!important;
+  }
+
+  body:has(.todayGame) .sceneAdmireButton {
+    right:26px!important;
+    bottom:80px!important;
+    border-radius:999px!important;
+    padding:9px 15px!important;
+    backdrop-filter:blur(8px)!important;
+  }
+
+  body:has(.todayGame) .heroStats {
+    left:24px!important;
+    right:24px!important;
+    bottom:20px!important;
+    height:58px!important;
+    border-radius:12px!important;
+    overflow:hidden!important;
+    background:rgba(18,14,11,.93)!important;
+    border-color:rgba(217,148,67,.28)!important;
+  }
+
+  body:has(.todayGame) .heroStats > div {
+    padding:8px 16px!important;
+  }
+
+  body:has(.todayGame) .heroStats b { font-size:18px!important; }
+  body:has(.todayGame) .heroStats small { font-size:10px!important; }
+
+  /* Dashboard grids */
+  body:has(.todayGame) .hudGrid {
+    grid-template-columns:minmax(0,1.05fr) minmax(0,1.05fr) minmax(320px,.82fr)!important;
+    gap:16px!important;
+    margin-top:16px!important;
+  }
+
+  body:has(.todayGame) .lowerHud {
+    grid-template-columns:minmax(280px,1fr) minmax(240px,.82fr) minmax(240px,.82fr) minmax(320px,1.12fr)!important;
+    gap:16px!important;
+    margin-top:16px!important;
+  }
+
+  body:has(.todayGame) .gamePanel {
+    min-height:290px!important;
+    border-radius:14px!important;
+    border-color:rgba(190,126,54,.45)!important;
+    box-shadow:0 15px 34px rgba(0,0,0,.28)!important;
+  }
+
+  body:has(.todayGame) .lowerHud .gamePanel {
+    min-height:230px!important;
+  }
+
+  body:has(.todayGame) .gamePanel header {
+    height:54px!important;
+    padding:0 16px!important;
+  }
+
+  body:has(.todayGame) .gamePanel h2 {
+    font-size:18px!important;
+  }
+
+  body:has(.todayGame) .paperPanel {
+    background:
+      radial-gradient(circle at 18% 12%, rgba(255,247,216,.42), transparent 34%),
+      linear-gradient(110deg, #ead2a4, #dfbd83)!important;
+  }
+
+  body:has(.todayGame) .darkArc,
+  body:has(.todayGame) .lowerHud .gamePanel {
+    background:
+      linear-gradient(145deg, rgba(34,27,21,.98), rgba(18,16,14,.98))!important;
+  }
+
+  body:has(.todayGame) .panelEmpty {
+    padding:78px 18px!important;
+    font-size:13px!important;
+  }
+
+  body:has(.todayGame) .paperRow,
+  body:has(.todayGame) .paperQuest {
+    min-height:44px!important;
+    font-size:12px!important;
+  }
+
+  body:has(.todayGame) .paperQuest strong {
+    font-size:13px!important;
+  }
+
+  body:has(.todayGame) .statRows,
+  body:has(.todayGame) .inventoryRows,
+  body:has(.todayGame) .arcBody {
+    padding-left:16px!important;
+    padding-right:16px!important;
   }
 
   .modalBackdrop { z-index:500!important; }
   .modalCard { opacity:1!important; }
 }
 
-@media (max-width:979px) {
-  .referenceBackdrop { position:absolute; width:1px; height:1px; left:-9999px; top:-9999px; opacity:0; }
-  .referenceImage { position:fixed; inset:0; width:100vw; height:100vh; object-fit:cover; object-position:center top; opacity:.22; pointer-events:none; }
+@media (min-width: 980px) and (max-width: 1380px) {
+  body:has(.todayGame) .shell { grid-template-columns:210px minmax(0,1fr)!important; }
+  body:has(.todayGame) .sidebar { width:210px!important; }
+  body:has(.todayGame) .main { padding-left:22px!important; padding-right:22px!important; }
+  body:has(.todayGame) .hudGrid { grid-template-columns:1fr 1fr!important; }
+  body:has(.todayGame) .darkArc { grid-column:1/-1!important; }
+  body:has(.todayGame) .lowerHud { grid-template-columns:1fr 1fr!important; }
+}
+
+@media (max-width: 979px) {
+  .referenceBackdrop,
+  .referenceImage,
+  .referenceVignette { display:none!important; }
 }
