@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import './autosize.css'
+import './today-fantasy.css'
 import { TextareaAutosizeManager } from '@/components/auto-textarea'
 
 export const metadata: Metadata = {
